@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
-import { syncHistoryToSupabase, fetchHistoryFromSupabase, type SupabaseHistoryRecord } from "@/lib/supabase";
+import { syncHistoryToSupabase, fetchHistoryFromSupabase, syncUserToSupabase, fetchUserFromSupabase, type SupabaseHistoryRecord } from "@/lib/supabase";
 
 export interface FortuneRecord {
   id: string;
@@ -165,38 +165,54 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback((phone: string, name: string) => {
-    const existing = loadFromStorage<User | null>(phoneKey(STORAGE_USER, phone), null);
+    const local = loadFromStorage<User | null>(phoneKey(STORAGE_USER, phone), null);
 
-    if (existing) {
-      existing.last_login = new Date().toISOString();
-      setUser(existing);
-      saveToStorage(STORAGE_USER, existing);
-      saveToStorage(phoneKey(STORAGE_USER, phone), existing);
-      // Load from localStorage first (fast), then merge Supabase data
+    // Always pull from Supabase for cross-device consistency
+    void (async () => {
+      const remote = await fetchUserFromSupabase(phone);
+      let userData: User;
+
+      if (remote) {
+        // Use Supabase as source of truth (most recent across devices)
+        userData = {
+          phone: remote.phone as string,
+          name: remote.name as string,
+          avatar: remote.avatar as string,
+          merit: remote.merit as number,
+          level: remote.level as string,
+          total_incense: remote.total_incense as number,
+          total_blessings: remote.total_blessings as number,
+          total_fortunes: remote.total_fortunes as number,
+          created_at: remote.created_at as string,
+          last_login: new Date().toISOString(),
+        };
+      } else if (local) {
+        // No remote data, use local
+        userData = { ...local, last_login: new Date().toISOString() };
+      } else {
+        // New user
+        userData = {
+          phone, name, avatar: name.slice(0, 1),
+          merit: 0, level: "善信",
+          total_incense: 0, total_blessings: 0, total_fortunes: 0,
+          created_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+        };
+      }
+
+      setUser(userData);
+      saveToStorage(STORAGE_USER, userData);
+      saveToStorage(phoneKey(STORAGE_USER, phone), userData);
+      syncUserToSupabase(userData as unknown as Record<string, unknown>);
+
+      // Load records from local + Supabase
       setFortuneHistory(loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, phone), []));
       setIncenseHistory(loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, phone), []));
       setBlessingHistory(loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, phone), []));
       setDreamHistory(loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, phone), []));
-      // Fetch from Supabase (cross-device sync)
       void syncRecordsFromSupabase(phone);
-    } else {
-      const newUser: User = {
-        phone, name, avatar: name.slice(0, 1),
-        merit: 0, level: "善信",
-        total_incense: 0, total_blessings: 0, total_fortunes: 0,
-        created_at: new Date().toISOString(),
-        last_login: new Date().toISOString(),
-      };
-      setUser(newUser);
-      saveToStorage(STORAGE_USER, newUser);
-      saveToStorage(phoneKey(STORAGE_USER, phone), newUser);
-      setFortuneHistory([]);
-      setIncenseHistory([]);
-      setBlessingHistory([]);
-      setDreamHistory([]);
-      // New user: try to fetch from Supabase in case they have data from another device
-      void syncRecordsFromSupabase(phone);
-    }
+    })();
+
     setShowAuthModal(false);
   }, []);
 

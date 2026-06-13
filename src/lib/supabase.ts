@@ -48,3 +48,31 @@ export async function fetchHistoryFromSupabase(phone: string, recordType: string
   }
   return (data || []) as SupabaseHistoryRecord[];
 }
+
+// ---- User Profile sync ----
+export async function syncUserToSupabase(user: Record<string, unknown>) {
+  const { error } = await supabase.from("user_profiles").upsert({
+    phone: user.phone,
+    name: user.name,
+    avatar: user.avatar,
+    merit: user.merit,
+    level: user.level,
+    total_incense: user.total_incense,
+    total_blessings: user.total_blessings,
+    total_fortunes: user.total_fortunes,
+    created_at: user.created_at,
+    last_login: user.last_login,
+  });
+  if (error) console.error("Supabase syncUser error:", error.message);
+}
+
+export async function fetchUserFromSupabase(phone: string): Promise<Record<string, unknown> | null> {
+  const { data, error } = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("phone", phone)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as Record<string, unknown>;
+}
