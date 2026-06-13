@@ -12,8 +12,8 @@ import { PaymentModal } from "@/components/PaymentModal";
 import { usePaymentWall } from "@/lib/usePaymentWall";
 import { useUser } from "@/lib/UserContext";
 import { useAdmin } from "@/lib/AdminContext";
-import { MOCK_BAZI, MOCK_BAZI_ANALYSIS } from "@/lib/data";
-import { delay } from "@/lib/utils";
+import { MOCK_BAZI, MOCK_BAZI_ANALYSIS, MASTERS } from "@/lib/data";
+import { delay, cn } from "@/lib/utils";
 
 type TabKey = "chart" | "personality" | "career" | "wealth" | "relationship" | "health";
 
@@ -32,6 +32,7 @@ export default function BaziPage() {
   const [birthDate, setBirthDate] = useState("1990-05-15");
   const [birthTime, setBirthTime] = useState("14:00");
   const [gender, setGender] = useState("male");
+  const [master, setMaster] = useState("huiming");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("chart");
   const { addFortuneRecord, addMerit, user } = useUser();
@@ -53,7 +54,7 @@ export default function BaziPage() {
     addFortuneRecord({
       id: `bazi_${Date.now()}`,
       type: "bazi",
-      question: `${name} 八字精批`,
+      question: `${MASTERS.find((m) => m.id === master)!.name} · ${name} 八字精批`,
       result: `${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
       timestamp: new Date().toISOString(),
     });
@@ -66,7 +67,7 @@ export default function BaziPage() {
       amountNumber: 28,
       status: "pending",
       screenshot,
-      detail: `${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
+      detail: `${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
     });
     payment.markPending();
   };
@@ -111,6 +112,34 @@ export default function BaziPage() {
                     ))}
                   </div>
                 </div>
+                <div>
+                  <label className="block text-sm text-paper-dark mb-2">选一位师父为您解盘</label>
+                  <div className="space-y-2">
+                    {MASTERS.map((m) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setMaster(m.id)}
+                        className={cn(
+                          "w-full rounded-xl border p-3 text-left transition-colors flex items-start gap-3",
+                          master === m.id
+                            ? "border-gold bg-gold/5"
+                            : "border-gold/15 hover:border-gold/30"
+                        )}
+                      >
+                        <span className="text-xl shrink-0">{m.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gold">{m.name}</span>
+                            <span className="text-xs text-paper-dark/40">{m.title}</span>
+                            <span className="text-xs text-paper-dark/50">· {m.style}</span>
+                          </div>
+                          <p className="text-xs text-paper-dark/60 mt-0.5 leading-relaxed">{m.desc}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 {error && <p className="text-xs text-vermillion">{error}</p>}
                 <Button variant="ritual" size="lg" className="w-full" onClick={handleSubmit}>
                   ☯️ 真排八字 · 开始精批
@@ -123,18 +152,18 @@ export default function BaziPage() {
         {step === "loading" && (
           <div className="mt-12 flex flex-col items-center gap-4">
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="size-12 rounded-full border-2 border-gold/30 border-t-gold" />
-            <p className="text-sm text-gold/70 animate-pulse">依《渊海子平》推演四柱、定格局、排大运…</p>
+            <p className="text-sm text-gold/70 animate-pulse">{MASTERS.find((m) => m.id === master)!.name}依《渊海子平》推演四柱、定格局、排大运…</p>
           </div>
         )}
 
-        {step === "result" && <BaziResult activeTab={activeTab} setActiveTab={setActiveTab} name={name} onBack={() => { setStep("form"); payment.setIsPaid(); }} isPaid={payment.isPaid} isPending={payment.isPending} onUnlock={() => payment.initiatePayment()} />}
+        {step === "result" && <BaziResult activeTab={activeTab} setActiveTab={setActiveTab} name={name} master={MASTERS.find((m) => m.id === master)!} onBack={() => { setStep("form"); payment.setIsPaid(); }} isPaid={payment.isPaid} isPending={payment.isPending} onUnlock={() => payment.initiatePayment()} />}
 
       <PaymentModal
         open={payment.showPayment}
         onClose={() => payment.setShowPayment(false)}
         title="八字精批"
         amount="¥28"
-        description={`${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`}
+        description={`${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`}
         onSuccess={handlePaymentSuccess}
         mode="qrcode"
       />
@@ -143,7 +172,7 @@ export default function BaziPage() {
   );
 }
 
-function BaziResult({ activeTab, setActiveTab, name, onBack, isPaid, isPending, onUnlock }: { activeTab: TabKey; setActiveTab: (t: TabKey) => void; name: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
+function BaziResult({ activeTab, setActiveTab, name, master, onBack, isPaid, isPending, onUnlock }: { activeTab: TabKey; setActiveTab: (t: TabKey) => void; name: string; master: typeof MASTERS[0]; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
   const bazi = MOCK_BAZI.data;
   const analysis = MOCK_BAZI_ANALYSIS;
 
@@ -151,7 +180,9 @@ function BaziResult({ activeTab, setActiveTab, name, onBack, isPaid, isPending, 
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">
       {/* Header */}
       <div className="rounded-2xl border border-gold/20 bg-gradient-to-b from-xuan-card to-xuan-surface p-5 text-center">
-        <p className="text-xs text-gold/60">{name} · {bazi.gender === "male" ? "乾造" : "坤造"}</p>
+        <span className="text-3xl">{master.icon}</span>
+        <p className="text-xs text-gold/60 mt-1">{master.name} · 开示</p>
+        <p className="text-xs text-gold/60 mt-2">{name} · {bazi.gender === "male" ? "乾造" : "坤造"}</p>
         <p className="mt-1 font-display text-xl text-gold">{bazi.day_master} · {bazi.pattern} · {bazi.day_master_strength}</p>
         <p className="mt-1 text-xs text-paper-dark/60">{bazi.lunar_birthday}</p>
         <p className="mt-2 text-xs text-gold/40">依《渊海子平》《滴天髓》《三命通会》真排 · 非AI生成</p>
@@ -249,7 +280,7 @@ function BaziResult({ activeTab, setActiveTab, name, onBack, isPaid, isPending, 
 
       <div className="flex gap-3">
         <Button variant="secondary" className="flex-1" onClick={onBack}>重新排盘</Button>
-        <ShareButton title={`${name}的八字精批`} description={`${bazi.day_master} · ${bazi.pattern}`} className="flex-1" />
+        <ShareButton title={`${master.name}开示 · ${name}的八字精批`} description={`${bazi.day_master} · ${bazi.pattern}`} className="flex-1" />
       </div>
     </motion.div>
   );
