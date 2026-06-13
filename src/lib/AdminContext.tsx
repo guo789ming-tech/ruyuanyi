@@ -58,7 +58,7 @@ const DEFAULT_PRICING: PricingConfig = {
 };
 
 const DEFAULT_SYSTEM_CONFIG: SystemConfig = {
-  siteName: "如愿居",
+  siteName: "如愿禅苑",
   adminPhones: ["13800000000"],
   siteDescription: "心诚则灵。为家人点一盏祈福灯，求一支灵签，看一卦命理八字。",
 };

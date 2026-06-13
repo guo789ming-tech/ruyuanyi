@@ -378,7 +378,7 @@ export default function PalmPage() {
                 重新上传
               </Button>
               <ShareButton
-                title="如愿居 · 手相图解"
+                title="如愿禅苑 · 手相图解"
                 description={`${selectedMaster.name}开示${hand === "left" ? "左手" : "右手"}手相 · 以《麻衣神相》为宗`}
                 className="flex-1"
               />
@@ -488,7 +488,7 @@ export default function PalmPage() {
             <p className="text-xs text-paper-dark/30">
               《麻衣神相》· 相手篇终：「手之有纹，如木之有络。纹清者贵，纹乱者劳。观手而可知一生矣。」
             </p>
-            <ShareButton title="如愿居 · 手相图解" description="拍一张清晰掌心照，依《麻衣神相》等古籍逐线开示。观手之纹理而知命。" />
+            <ShareButton title="如愿禅苑 · 手相图解" description="拍一张清晰掌心照，依《麻衣神相》等古籍逐线开示。观手之纹理而知命。" />
           </div>
         </ScrollReveal>
       </div>

@@ -70,7 +70,7 @@ export default function AdminPage() {
         <div className="text-center space-y-4">
           <div className="text-center mb-6">
             <span className="text-5xl">🪔</span>
-            <h2 className="mt-2 font-display text-xl text-gold">如愿居 · 管理后台</h2>
+            <h2 className="mt-2 font-display text-xl text-gold">如愿禅苑 · 管理后台</h2>
           </div>
           <Button variant="ritual" onClick={() => setShowAuthModal(true)}>
             手机号登录

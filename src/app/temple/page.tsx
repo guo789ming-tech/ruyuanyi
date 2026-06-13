@@ -223,7 +223,7 @@ export default function TemplePage() {
           </ScrollReveal>
 
           <div className="text-center">
-            <ShareButton title="如愿居在线上香" description="三礼九炷，为家人、为众生敬奉清香。香火在心念，不在多。" />
+            <ShareButton title="如愿禅苑在线上香" description="三礼九炷，为家人、为众生敬奉清香。香火在心念，不在多。" />
           </div>
         </div>
       </div>

@@ -305,7 +305,7 @@ export default function BlessingPage() {
                   再点一盏
                 </Button>
                 <ShareButton
-                  title={`在如愿居为${relation ? RELATIONS.find((r) => r.id === relation)?.label : "家人"}${name}点了一盏祈福灯`}
+                  title={`在如愿禅苑为${relation ? RELATIONS.find((r) => r.id === relation)?.label : "家人"}${name}点了一盏祈福灯`}
                   description={wish || "愿心愿成就，福寿安康"}
                   className="flex-1"
                 />

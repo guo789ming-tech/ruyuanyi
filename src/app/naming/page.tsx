@@ -438,7 +438,7 @@ function NamingResult({ surname, onBack, isPaid, isPending, onUnlock }: { surnam
           重新起名
         </Button>
         <ShareButton
-          title={`在如愿居请了好名字 - ${names[0].full_name}`}
+          title={`在如愿禅苑请了好名字 - ${names[0].full_name}`}
           description={`${names[0].full_name} · ${names[0].name_meaning}`}
           className="flex-1"
         />

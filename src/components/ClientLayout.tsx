@@ -21,7 +21,7 @@ function Header() {
       <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <BodhiLeaf className="size-7 drop-shadow-[0_0_8px_rgba(212,168,83,0.3)]" />
-          <span className="font-display text-lg text-gold tracking-wider">如愿居</span>
+          <span className="font-display text-lg text-gold tracking-wider">如愿禅苑</span>
         </Link>
         <nav className="hidden items-center gap-5 md:flex">
           <Link href="/blessing" className="text-sm text-paper-dark/70 hover:text-gold transition-colors">祈福</Link>

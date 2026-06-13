@@ -135,7 +135,7 @@ export default function HomePage() {
       {/* ===== Why Us ===== */}
       <section className="space-y-6 pb-16">
         <ScrollReveal>
-          <p className="text-center text-2xl tracking-widest text-gold">— 为何选如愿居 —</p>
+          <p className="text-center text-2xl tracking-widest text-gold">— 为何选如愿禅苑 —</p>
         </ScrollReveal>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -227,7 +227,7 @@ export default function HomePage() {
           <p className="text-sm text-paper-dark/50">
             灵棋经 · 渊海子平 · 增删卜易 · 麻衣神相 · 周公解梦
           </p>
-          <p className="mt-1 text-sm text-paper-dark/40">如愿居 · 一念慈悲，一灯长明</p>
+          <p className="mt-1 text-sm text-paper-dark/40">如愿禅苑 · 一念慈悲，一灯长明</p>
         </ScrollReveal>
       </footer>
     </div>

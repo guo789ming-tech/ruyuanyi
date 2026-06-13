@@ -150,7 +150,7 @@ export function AuthModal() {
             )}
 
             <p className="mt-4 text-center text-xs text-paper-dark/40">
-              绑定即表示同意如愿居用户协议 · 您的信息仅用于功德记录与找回
+              绑定即表示同意如愿禅苑用户协议 · 您的信息仅用于功德记录与找回
             </p>
           </motion.div>
         </motion.div>

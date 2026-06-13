@@ -170,7 +170,7 @@ export default function MeritPage() {
         <ScrollReveal delay={0.3}>
           <div className="mt-6 text-center">
             <p className="font-display text-sm text-gold/50">日行一善 · 功德无量</p>
-            <ShareButton title="如愿居功德榜" description={`我已累积${merit}功德，排名第${MOCK_LEADERBOARD.data.my_rank}位`} className="mt-3" />
+            <ShareButton title="如愿禅苑功德榜" description={`我已累积${merit}功德，排名第${MOCK_LEADERBOARD.data.my_rank}位`} className="mt-3" />
           </div>
         </ScrollReveal>
       </div>

@@ -17,7 +17,7 @@ function toDataURL(url: string): Promise<string> {
     ctx.fillStyle = "#C9A05C";
     ctx.font = "bold 20px serif";
     ctx.textAlign = "center";
-    ctx.fillText("如愿居", 140, 120);
+    ctx.fillText("如愿禅苑", 140, 120);
     ctx.font = "14px sans-serif";
     ctx.fillText("扫一扫访问", 140, 160);
     ctx.fillStyle = "#F5F0E8";
@@ -58,7 +58,7 @@ export function ShareModal({ open, onClose, title, description, url }: ShareModa
     return () => { cancelled = true; };
   }, [shareUrl]);
 
-  const shareTitle = title || "如愿居 · 为家人祈福求灵签";
+  const shareTitle = title || "如愿禅苑 · 为家人祈福求灵签";
   const shareDesc = description || "心诚则灵。为家人点一盏祈福灯，求一支灵签，看一卦命理八字。一念慈悲，如愿以偿。";
   const shareText = `${shareTitle}\n${shareDesc}\n${shareUrl}`;
 
@@ -108,7 +108,7 @@ export function ShareModal({ open, onClose, title, description, url }: ShareModa
 
         <div className="border-b border-gold/15 bg-gradient-to-r from-gold/10 via-vermillion/5 to-gold/10 px-5 py-4 text-center">
           <p className="flex items-center justify-center gap-1.5 text-xs tracking-widest text-gold/85">
-            <Share2 className="size-4" />分享如愿居
+            <Share2 className="size-4" />分享如愿禅苑
           </p>
           <h3 className="mt-1.5 font-display text-2xl text-gold">分享一念，福报倍增</h3>
           <p className="mt-1 text-xs text-paper-dark/70">一灯传万灯 · 让家人朋友也求一支签、点一盏灯</p>
