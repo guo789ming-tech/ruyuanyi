@@ -30,7 +30,6 @@ export default function BlessingPage() {
   const [duration, setDuration] = useState("month");
   const [wish, setWish] = useState("");
   const [yourName, setYourName] = useState("");
-  const [litLamps, setLitLamps] = useState(0);
   const { addOrder, pricing } = useAdmin();
   const durations = [
     { id: "month", label: "一月", days: 30, price: pricing.blessing_month },
@@ -38,7 +37,6 @@ export default function BlessingPage() {
     { id: "year", label: "一年", days: 365, price: pricing.blessing_year },
     { id: "forever", label: "永久", days: -1, price: pricing.blessing_forever },
   ];
-  const [todayLamps, setTodayLamps] = useState(0);
   const [error, setError] = useState("");
   const [showPayment, setShowPayment] = useState(false);
   const { isLoggedIn, setShowAuthModal, addBlessingRecord, user } = useUser();
@@ -103,8 +101,6 @@ export default function BlessingPage() {
     setView("lighting");
     void (async () => {
       await delay(2500);
-      setLitLamps((prev) => prev + 1);
-      setTodayLamps((prev) => prev + 1);
       setView("lit");
     })();
   };
@@ -139,20 +135,6 @@ export default function BlessingPage() {
                 <p className="mt-1 text-sm text-paper-dark/70">
                   为家人点一盏如愿灯，挂名长明。心念所在，福报所在。
                 </p>
-              </div>
-
-              <div className="mt-4 flex items-center justify-center gap-6 text-center">
-                <div>
-                  <p className="text-xs text-paper-dark/50">已点亮</p>
-                  <p className="font-display text-xl text-gold">{litLamps}</p>
-                  <p className="text-xs text-paper-dark/50">盏</p>
-                </div>
-                <div className="h-10 w-px bg-gold/15" />
-                <div>
-                  <p className="text-xs text-paper-dark/50">今日新增</p>
-                  <p className="font-display text-xl text-vermillion">{todayLamps}</p>
-                  <p className="text-xs text-paper-dark/50">盏</p>
-                </div>
               </div>
 
               <div className="mt-6 space-y-4">
