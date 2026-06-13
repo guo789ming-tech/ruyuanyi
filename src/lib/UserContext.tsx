@@ -98,7 +98,36 @@ function phoneKey(base: string, phone: string) {
 }
 
 export function checkExistingUser(phone: string): User | null {
-  return loadFromStorage<User | null>(`${STORAGE_USER}_${phone}`, null);
+  // Try new key first
+  const user = loadFromStorage<User | null>(`${STORAGE_USER}_${phone}`, null);
+  if (user) return user;
+
+  // Auto-migrate from old prefix (putiyuan → ruyuanyi)
+  interface OldUser { phone: string; name: string; avatar: string; merit: number; level: string; total_incense: number; total_blessings: number; total_fortunes: number; created_at: string; last_login?: string; }
+  const old = loadFromStorage<OldUser | null>(`putiyuan_user_${phone}`, null);
+  if (old) {
+    const migrated: User = {
+      phone: old.phone,
+      name: old.name,
+      avatar: old.avatar,
+      merit: old.merit,
+      level: old.level,
+      total_incense: old.total_incense,
+      total_blessings: old.total_blessings,
+      total_fortunes: old.total_fortunes,
+      created_at: old.created_at,
+      last_login: old.last_login,
+    };
+    saveToStorage(`${STORAGE_USER}_${phone}`, migrated);
+    // Migrate histories
+    ["fortune_history", "incense_history", "blessing_history", "dream_history"].forEach((suffix) => {
+      const oldData = loadFromStorage(`putiyuan_${suffix}_${phone}`, null);
+      if (oldData) saveToStorage(`ruyuanyi_${suffix}_${phone}`, oldData);
+    });
+    return migrated;
+  }
+
+  return null;
 }
 
 const LEVEL_THRESHOLDS: [number, string][] = [
@@ -256,7 +285,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const retrieveRecords = useCallback((phone: string): boolean => {
-    const saved = loadFromStorage<User | null>(`ruyuanyi_user_${phone}`, null);
+    const saved = checkExistingUser(phone);
     if (saved) {
       setUser((prev) => prev ? { ...prev, merit: saved.merit, level: saved.level, total_incense: saved.total_incense, total_blessings: saved.total_blessings, total_fortunes: saved.total_fortunes } : prev);
       if (user) {
