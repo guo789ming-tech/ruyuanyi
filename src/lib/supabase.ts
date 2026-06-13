@@ -18,3 +18,33 @@ export interface SupabaseOrder {
   detail: string;
   timestamp: string;
 }
+
+// ---- User History (cross-device sync) ----
+export interface SupabaseHistoryRecord {
+  id: string;
+  user_phone: string;
+  record_type: "fortune" | "incense" | "blessing" | "dream";
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+export async function syncHistoryToSupabase(record: SupabaseHistoryRecord) {
+  const { error } = await supabase.from("user_history").upsert(record);
+  if (error) console.error("Supabase syncHistory error:", error.message);
+}
+
+export async function fetchHistoryFromSupabase(phone: string, recordType: string) {
+  const { data, error } = await supabase
+    .from("user_history")
+    .select("*")
+    .eq("user_phone", phone)
+    .eq("record_type", recordType)
+    .order("timestamp", { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error("Supabase fetchHistory error:", error.message);
+    return [];
+  }
+  return (data || []) as SupabaseHistoryRecord[];
+}

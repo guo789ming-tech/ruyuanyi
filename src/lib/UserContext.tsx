@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { syncHistoryToSupabase, fetchHistoryFromSupabase, type SupabaseHistoryRecord } from "@/lib/supabase";
 
 export interface FortuneRecord {
   id: string;
@@ -164,30 +165,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback((phone: string, name: string) => {
-    // Check if returning user
     const existing = loadFromStorage<User | null>(phoneKey(STORAGE_USER, phone), null);
 
     if (existing) {
-      // Returning user: load all saved data
       existing.last_login = new Date().toISOString();
       setUser(existing);
       saveToStorage(STORAGE_USER, existing);
       saveToStorage(phoneKey(STORAGE_USER, phone), existing);
+      // Load from localStorage first (fast), then merge Supabase data
       setFortuneHistory(loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, phone), []));
       setIncenseHistory(loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, phone), []));
       setBlessingHistory(loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, phone), []));
       setDreamHistory(loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, phone), []));
+      // Fetch from Supabase (cross-device sync)
+      void syncRecordsFromSupabase(phone);
     } else {
-      // New user
       const newUser: User = {
-        phone,
-        name,
-        avatar: name.slice(0, 1),
-        merit: 0,
-        level: "善信",
-        total_incense: 0,
-        total_blessings: 0,
-        total_fortunes: 0,
+        phone, name, avatar: name.slice(0, 1),
+        merit: 0, level: "善信",
+        total_incense: 0, total_blessings: 0, total_fortunes: 0,
         created_at: new Date().toISOString(),
         last_login: new Date().toISOString(),
       };
@@ -198,9 +194,68 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setIncenseHistory([]);
       setBlessingHistory([]);
       setDreamHistory([]);
+      // New user: try to fetch from Supabase in case they have data from another device
+      void syncRecordsFromSupabase(phone);
     }
     setShowAuthModal(false);
   }, []);
+
+  // Pull records from Supabase and merge into state
+  async function syncRecordsFromSupabase(phone: string) {
+    try {
+      const [fortune, incense, blessing, dream] = await Promise.all([
+        fetchHistoryFromSupabase(phone, "fortune"),
+        fetchHistoryFromSupabase(phone, "incense"),
+        fetchHistoryFromSupabase(phone, "blessing"),
+        fetchHistoryFromSupabase(phone, "dream"),
+      ]);
+      const mapRecords = (rows: SupabaseHistoryRecord[]) =>
+        rows.map((r) => r.data as unknown as FortuneRecord);
+      const mapBlessing = (rows: SupabaseHistoryRecord[]) =>
+        rows.map((r) => r.data as unknown as BlessingRecord);
+      const mapIncense = (rows: SupabaseHistoryRecord[]) =>
+        rows.map((r) => r.data as unknown as IncenseRecord);
+      const mapDream = (rows: SupabaseHistoryRecord[]) =>
+        rows.map((r) => r.data as unknown as DreamRecord);
+
+      if (fortune.length > 0) {
+        const merged = mergeRecords(mapRecords(fortune), loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, phone), []));
+        setFortuneHistory(merged);
+        saveToStorage(phoneKey(STORAGE_FORTUNE, phone), merged);
+      }
+      if (incense.length > 0) {
+        const merged = mergeRecords(mapIncense(incense), loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, phone), []));
+        setIncenseHistory(merged);
+        saveToStorage(phoneKey(STORAGE_INCENSE, phone), merged);
+      }
+      if (blessing.length > 0) {
+        const merged = mergeRecords(mapBlessing(blessing), loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, phone), []));
+        setBlessingHistory(merged);
+        saveToStorage(phoneKey(STORAGE_BLESSING, phone), merged);
+      }
+      if (dream.length > 0) {
+        const merged = mergeRecords(mapDream(dream), loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, phone), []));
+        setDreamHistory(merged);
+        saveToStorage(phoneKey(STORAGE_DREAM, phone), merged);
+      }
+    } catch (e) {
+      console.error("syncRecordsFromSupabase error:", e);
+    }
+  }
+
+  function mergeRecords<T extends { id: string }>(remote: T[], local: T[]): T[] {
+    const ids = new Set(local.map((r) => r.id));
+    const merged = [...local];
+    for (const r of remote) {
+      if (!ids.has(r.id)) merged.push(r);
+    }
+    merged.sort((a, b) => {
+      const ta = (a as Record<string, unknown>).timestamp as string || "";
+      const tb = (b as Record<string, unknown>).timestamp as string || "";
+      return tb.localeCompare(ta);
+    });
+    return merged.slice(0, 50);
+  }
 
   const logout = useCallback(() => {
     if (user) {
@@ -222,7 +277,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addFortuneRecord = useCallback((r: FortuneRecord) => {
     setFortuneHistory((prev) => {
       const next = [r, ...prev].slice(0, 50);
-      if (user) saveToStorage(phoneKey(STORAGE_FORTUNE, user.phone), next);
+      if (user) {
+        saveToStorage(phoneKey(STORAGE_FORTUNE, user.phone), next);
+        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "fortune", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+      }
       return next;
     });
     setUser((prev) => {
@@ -237,7 +295,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addIncenseRecord = useCallback((r: IncenseRecord) => {
     setIncenseHistory((prev) => {
       const next = [r, ...prev].slice(0, 50);
-      if (user) saveToStorage(phoneKey(STORAGE_INCENSE, user.phone), next);
+      if (user) {
+        saveToStorage(phoneKey(STORAGE_INCENSE, user.phone), next);
+        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "incense", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+      }
       return next;
     });
     setUser((prev) => {
@@ -253,7 +314,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addBlessingRecord = useCallback((r: BlessingRecord) => {
     setBlessingHistory((prev) => {
       const next = [r, ...prev].slice(0, 50);
-      if (user) saveToStorage(phoneKey(STORAGE_BLESSING, user.phone), next);
+      if (user) {
+        saveToStorage(phoneKey(STORAGE_BLESSING, user.phone), next);
+        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "blessing", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+      }
       return next;
     });
     setUser((prev) => {
@@ -268,7 +332,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addDreamRecord = useCallback((r: DreamRecord) => {
     setDreamHistory((prev) => {
       const next = [r, ...prev].slice(0, 30);
-      if (user) saveToStorage(phoneKey(STORAGE_DREAM, user.phone), next);
+      if (user) {
+        saveToStorage(phoneKey(STORAGE_DREAM, user.phone), next);
+        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "dream", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+      }
       return next;
     });
   }, [user]);
