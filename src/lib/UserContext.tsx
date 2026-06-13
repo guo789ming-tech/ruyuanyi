@@ -87,11 +87,11 @@ function saveToStorage(key: string, value: unknown) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* noop */ }
 }
 
-const STORAGE_USER = "putiyuan_user";
-const STORAGE_FORTUNE = "putiyuan_fortune_history";
-const STORAGE_INCENSE = "putiyuan_incense_history";
-const STORAGE_BLESSING = "putiyuan_blessing_history";
-const STORAGE_DREAM = "putiyuan_dream_history";
+const STORAGE_USER = "ruyuanyi_user";
+const STORAGE_FORTUNE = "ruyuanyi_fortune_history";
+const STORAGE_INCENSE = "ruyuanyi_incense_history";
+const STORAGE_BLESSING = "ruyuanyi_blessing_history";
+const STORAGE_DREAM = "ruyuanyi_dream_history";
 
 function phoneKey(base: string, phone: string) {
   return `${base}_${phone}`;
@@ -256,7 +256,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const retrieveRecords = useCallback((phone: string): boolean => {
-    const saved = loadFromStorage<User | null>(`putiyuan_user_${phone}`, null);
+    const saved = loadFromStorage<User | null>(`ruyuanyi_user_${phone}`, null);
     if (saved) {
       setUser((prev) => prev ? { ...prev, merit: saved.merit, level: saved.level, total_incense: saved.total_incense, total_blessings: saved.total_blessings, total_fortunes: saved.total_fortunes } : prev);
       if (user) {

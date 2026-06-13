@@ -16,10 +16,10 @@ export function delay(ms: number) {
 
 export function getDeviceId() {
   if (typeof window === "undefined") return "ssr_device";
-  let id = window.localStorage.getItem("putiyuan_device_id");
+  let id = window.localStorage.getItem("ruyuanyi_device_id");
   if (!id) {
     id = `web_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
-    window.localStorage.setItem("putiyuan_device_id", id);
+    window.localStorage.setItem("ruyuanyi_device_id", id);
   }
   return id;
 }

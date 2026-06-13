@@ -311,7 +311,7 @@ export function getStoredUsers(): Record<string, unknown>[] {
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.startsWith("putiyuan_user_1")) {
+      if (key?.startsWith("ruyuanyi_user_1")) {
         try {
           const val = localStorage.getItem(key);
           if (val) users.push(JSON.parse(val));
