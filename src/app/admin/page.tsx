@@ -29,11 +29,13 @@ import {
   ClipboardCheck,
   Eye,
   Image,
+  Bell,
 } from "lucide-react";
 import { useUser } from "@/lib/UserContext";
 import { useAdmin, getStoredUsers, type Order } from "@/lib/AdminContext";
 import { Button } from "@/components/Button";
 import { AuthModal } from "@/components/AuthModal";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 // ---- Module types ----
@@ -57,8 +59,71 @@ export default function AdminPage() {
 
   const [activeModule, setActiveModule] = useState<ModuleKey>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [prevPendingIds, setPrevPendingIds] = useState<Set<string>>(new Set());
+  const [notification, setNotification] = useState<{ id: number; text: string } | null>(null);
+  const hasMounted = useRef(false);
 
   const { login } = useUser();
+
+  // Play a simple chime sound
+  const playChime = () => {
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.8);
+    } catch { /* browser may block audio without interaction */ }
+  };
+
+  const showNotification = (text: string) => {
+    const id = Date.now();
+    setNotification({ id, text });
+    playChime();
+    setTimeout(() => setNotification((prev) => (prev?.id === id ? null : prev)), 5000);
+  };
+
+  // Poll for new pending orders
+  useEffect(() => {
+    if (!isAdmin) return;
+    const poll = async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, status, detail")
+        .eq("status", "pending")
+        .order("timestamp", { ascending: false });
+
+      if (error || !data) return;
+
+      const pendingIds = new Set(data.map((o: { id: string }) => o.id));
+      const count = data.length;
+      setPendingCount(count);
+
+      if (hasMounted.current) {
+        // Detect new pending orders
+        const newIds = [...pendingIds].filter((id) => !prevPendingIds.has(id));
+        if (newIds.length > 0) {
+          const newOrder = data.find((o: { id: string }) => o.id === newIds[0]) as { detail?: string } | undefined;
+          showNotification(`新订单待审核：${newOrder?.detail || "查看详情"}${newIds.length > 1 ? ` 等${newIds.length}笔` : ""}`);
+        }
+      } else {
+        hasMounted.current = true;
+      }
+      setPrevPendingIds(pendingIds);
+    };
+
+    poll();
+    const interval = setInterval(poll, 8000);
+    return () => clearInterval(interval);
+  }, [isAdmin]);
 
   // If not logged in, show login with quick admin access
   if (!isLoggedIn) {
@@ -155,6 +220,11 @@ export default function AdminPage() {
             >
               {item.icon}
               {item.label}
+              {item.key === "orders" && pendingCount > 0 && (
+                <span className="ml-auto rounded-full bg-vermillion px-1.5 py-0.5 text-[10px] font-bold text-white leading-none min-w-[18px] text-center">
+                  {pendingCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -188,6 +258,24 @@ export default function AdminPage() {
             {user?.name} · {user?.phone}
           </span>
         </header>
+
+        {/* Toast notification */}
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, x: "-50%" }}
+              exit={{ opacity: 0, y: -20, x: "-50%" }}
+              className="fixed top-16 left-1/2 z-[100] rounded-xl border border-vermillion/30 bg-vermillion/10 px-5 py-3 shadow-lg backdrop-blur-sm cursor-pointer"
+              onClick={() => setNotification(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Bell className="size-4 text-vermillion-light animate-bounce" />
+                <span className="text-sm text-paper">{notification.text}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Content area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
