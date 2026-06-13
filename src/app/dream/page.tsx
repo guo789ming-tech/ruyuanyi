@@ -19,17 +19,19 @@ export default function DreamPage() {
   const [error, setError] = useState("");
   const { addDreamRecord } = useUser();
 
-  const handleSearch = async () => {
-    if (!keyword.trim()) { setError("请输入梦境关键词"); return; }
+  const handleSearch = async (term?: string) => {
+    const q = (term ?? keyword).trim();
+    if (!q) { setError("请输入梦境关键词"); return; }
+    if (term) setKeyword(term);
     setError("");
     setSearching(true);
     setView("search");
     await delay(1500);
-    const dreamResult = MOCK_DREAM(keyword);
+    const dreamResult = MOCK_DREAM(q);
     setResult(dreamResult);
     addDreamRecord({
       id: `dream_${Date.now()}`,
-      keyword: keyword.trim(),
+      keyword: q,
       result: dreamResult.data.interpretation[0]?.text || "",
       ji: dreamResult.data.interpretation[0]?.ji || "平",
       timestamp: new Date().toISOString(),
@@ -72,7 +74,7 @@ export default function DreamPage() {
                       placeholder="输入梦境关键词，如：水、蛇、飞、鱼、牙齿..."
                       className="flex-1 rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper placeholder:text-paper-dark/30 focus:border-gold/50 focus:outline-none"
                     />
-                    <Button variant="primary" onClick={handleSearch}>
+                    <Button variant="primary" onClick={() => handleSearch()}>
                       <Search className="size-4" /> 解梦
                     </Button>
                   </div>
@@ -86,7 +88,7 @@ export default function DreamPage() {
                 {DREAM_CATEGORIES.map((cat) => (
                   <button
                     key={cat.id}
-                    onClick={() => { setKeyword(cat.name.slice(2)); handleSearch(); }}
+                    onClick={() => handleSearch(cat.name.slice(2))}
                     className="rounded-xl border border-gold/15 bg-xuan-surface/40 p-4 text-left hover:border-gold/30 transition-colors"
                   >
                     <span className="text-2xl">{cat.icon}</span>

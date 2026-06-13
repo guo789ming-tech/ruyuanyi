@@ -36,8 +36,8 @@ export default function BaziPage() {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("chart");
   const { addFortuneRecord, addMerit, user } = useUser();
-  const payment = usePaymentWall("bazi", "¥28");
-  const { addOrder } = useAdmin();
+  const { addOrder, pricing } = useAdmin();
+  const payment = usePaymentWall("bazi", pricing.bazi);
 
   const handleSubmit = async () => {
     if (!name.trim()) { setError("请输入姓名"); return; }
@@ -63,8 +63,8 @@ export default function BaziPage() {
       userPhone: user?.phone || "",
       userName: user?.name || "",
       service: "bazi",
-      amount: "¥28",
-      amountNumber: 28,
+      amount: pricing.bazi,
+      amountNumber: parseFloat(pricing.bazi.replace("¥", "")) || 0,
       status: "pending",
       screenshot,
       detail: `${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
@@ -156,13 +156,13 @@ export default function BaziPage() {
           </div>
         )}
 
-        {step === "result" && <BaziResult activeTab={activeTab} setActiveTab={setActiveTab} name={name} master={MASTERS.find((m) => m.id === master)!} onBack={() => { setStep("form"); payment.setIsPaid(); }} isPaid={payment.isPaid} isPending={payment.isPending} onUnlock={() => payment.initiatePayment()} />}
+        {step === "result" && <BaziResult activeTab={activeTab} setActiveTab={setActiveTab} name={name} master={MASTERS.find((m) => m.id === master)!} price={pricing.bazi} onBack={() => { setStep("form"); payment.setIsPaid(); }} isPaid={payment.isPaid} isPending={payment.isPending} onUnlock={() => payment.initiatePayment()} />}
 
       <PaymentModal
         open={payment.showPayment}
         onClose={() => payment.setShowPayment(false)}
         title="八字精批"
-        amount="¥28"
+        amount={pricing.bazi}
         description={`${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`}
         onSuccess={handlePaymentSuccess}
         mode="qrcode"
@@ -172,7 +172,7 @@ export default function BaziPage() {
   );
 }
 
-function BaziResult({ activeTab, setActiveTab, name, master, onBack, isPaid, isPending, onUnlock }: { activeTab: TabKey; setActiveTab: (t: TabKey) => void; name: string; master: typeof MASTERS[0]; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
+function BaziResult({ activeTab, setActiveTab, name, master, price, onBack, isPaid, isPending, onUnlock }: { activeTab: TabKey; setActiveTab: (t: TabKey) => void; name: string; master: typeof MASTERS[0]; price: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
   const bazi = MOCK_BAZI.data;
   const analysis = MOCK_BAZI_ANALYSIS;
 
@@ -231,7 +231,7 @@ function BaziResult({ activeTab, setActiveTab, name, master, onBack, isPaid, isP
       </div>
 
       {/* Tab content */}
-      <LockedContent locked={!isPaid} pending={isPending} price="¥28" onUnlock={onUnlock}>
+      <LockedContent locked={!isPaid} pending={isPending} price={price} onUnlock={onUnlock}>
       <AnimatePresence mode="wait">
         <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="rounded-2xl border border-gold/15 bg-xuan-surface/40 p-5">
           {activeTab === "chart" && (

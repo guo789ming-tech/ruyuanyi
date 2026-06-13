@@ -27,8 +27,8 @@ export default function NamingPage() {
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [error, setError] = useState("");
   const { addFortuneRecord, addMerit, user } = useUser();
-  const payment = usePaymentWall("naming", "¥38");
-  const { addOrder } = useAdmin();
+  const { addOrder, pricing } = useAdmin();
+  const payment = usePaymentWall("naming", pricing.naming);
 
   const toggleStyle = (s: string) => {
     setSelectedStyles((prev) =>
@@ -62,8 +62,8 @@ export default function NamingPage() {
       userPhone: user?.phone || "",
       userName: user?.name || "",
       service: "naming",
-      amount: "¥38",
-      amountNumber: 38,
+      amount: pricing.naming,
+      amountNumber: parseFloat(pricing.naming.replace("¥", "")) || 0,
       status: "pending",
       screenshot,
       detail: `${surname}${gender === "male" ? "男" : "女"}宝宝 · ${nameLength}字名 · ${names[0]?.full_name || ""}`,
@@ -266,6 +266,7 @@ export default function NamingPage() {
         {step === "result" && (
           <NamingResult
             surname={surname}
+            price={pricing.naming}
             onBack={() => { setStep("form"); payment.setIsPaid(); }}
             isPaid={payment.isPaid}
             isPending={payment.isPending}
@@ -277,7 +278,7 @@ export default function NamingPage() {
           open={payment.showPayment}
           onClose={() => payment.setShowPayment(false)}
           title="宝宝起名"
-          amount="¥38"
+          amount={pricing.naming}
           description={`${surname}${gender === "male" ? "男" : "女"}宝宝 · ${nameLength}字名`}
           onSuccess={handlePaymentSuccess}
           mode="qrcode"
@@ -287,7 +288,7 @@ export default function NamingPage() {
   );
 }
 
-function NamingResult({ surname, onBack, isPaid, isPending, onUnlock }: { surname: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
+function NamingResult({ surname, price, onBack, isPaid, isPending, onUnlock }: { surname: string; price: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
   const names = MOCK_NAMES.data.names.map((n) => ({
     ...n,
     full_name: surname + n.full_name.slice(1),
@@ -371,7 +372,7 @@ function NamingResult({ surname, onBack, isPaid, isPending, onUnlock }: { surnam
           </motion.div>
         ))}
 
-        <LockedContent locked={!isPaid} pending={isPending} price="¥38" onUnlock={onUnlock}>
+        <LockedContent locked={!isPaid} pending={isPending} price={price} onUnlock={onUnlock}>
           {names.slice(2).map((name, i) => (
             <motion.div
               key={name.rank}

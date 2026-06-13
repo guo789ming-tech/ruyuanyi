@@ -38,8 +38,8 @@ export default function PalmPage() {
   const [selectedLine, setSelectedLine] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
   const { addFortuneRecord, addMerit, user } = useUser();
-  const payment = usePaymentWall("palm", "¥18");
-  const { addOrder } = useAdmin();
+  const { addOrder, pricing } = useAdmin();
+  const payment = usePaymentWall("palm", pricing.palm);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,8 +73,8 @@ export default function PalmPage() {
       userPhone: user?.phone || "",
       userName: user?.name || "",
       service: "palm",
-      amount: "¥18",
-      amountNumber: 18,
+      amount: pricing.palm,
+      amountNumber: parseFloat(pricing.palm.replace("¥", "")) || 0,
       status: "pending",
       screenshot,
       detail: `${selectedMaster.name}开示${hand === "left" ? "左手" : "右手"}手相 · 四线解读`,
@@ -315,7 +315,7 @@ export default function PalmPage() {
                 </motion.div>
               ))}
 
-              <LockedContent locked={!payment.isPaid} pending={payment.isPending} price="¥18" onUnlock={() => payment.initiatePayment()}>
+              <LockedContent locked={!payment.isPaid} pending={payment.isPending} price={pricing.palm} onUnlock={() => payment.initiatePayment()}>
                 {PALM_LINES.slice(1).map((line, i) => (
                   <motion.div
                     key={line.id}
@@ -449,7 +449,7 @@ export default function PalmPage() {
           open={payment.showPayment}
           onClose={() => payment.setShowPayment(false)}
           title="手相图解"
-          amount="¥18"
+          amount={pricing.palm}
           description={`${selectedMaster.name}开示${hand === "left" ? "左手" : "右手"}手相 · 四线完整解读`}
           onSuccess={handlePaymentSuccess}
           mode="qrcode"

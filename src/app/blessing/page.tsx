@@ -23,13 +23,6 @@ const RELATIONS = [
   { id: "self", label: "自己" },
 ];
 
-const DURATIONS = [
-  { id: "month", label: "一月", days: 30, price: "¥6.6" },
-  { id: "100days", label: "百日", days: 100, price: "¥19.9" },
-  { id: "year", label: "一年", days: 365, price: "¥66.6" },
-  { id: "forever", label: "永久", days: -1, price: "¥199" },
-];
-
 export default function BlessingPage() {
   const [view, setView] = useState<"form" | "lighting" | "lit">("form");
   const [name, setName] = useState("");
@@ -38,13 +31,19 @@ export default function BlessingPage() {
   const [wish, setWish] = useState("");
   const [yourName, setYourName] = useState("");
   const [litLamps, setLitLamps] = useState(0);
+  const { addOrder, pricing } = useAdmin();
+  const durations = [
+    { id: "month", label: "一月", days: 30, price: pricing.blessing_month },
+    { id: "100days", label: "百日", days: 100, price: pricing.blessing_100days },
+    { id: "year", label: "一年", days: 365, price: pricing.blessing_year },
+    { id: "forever", label: "永久", days: -1, price: pricing.blessing_forever },
+  ];
   const [todayLamps, setTodayLamps] = useState(0);
   const [error, setError] = useState("");
   const [showPayment, setShowPayment] = useState(false);
   const { isLoggedIn, setShowAuthModal, addBlessingRecord, user } = useUser();
-  const { addOrder } = useAdmin();
 
-  const selectedDuration = DURATIONS.find((d) => d.id === duration)!;
+  const selectedDuration = durations.find((d) => d.id === duration)!;
 
   // Simulate live wall updates
   const [wallEntries, setWallEntries] = useState(BLESSING_WALL);
@@ -195,7 +194,7 @@ export default function BlessingPage() {
                 <div>
                   <label className="block text-xs text-paper-dark/60 mb-1">供奉时长</label>
                   <div className="grid grid-cols-4 gap-2">
-                    {DURATIONS.map((d) => (
+                    {durations.map((d) => (
                       <button
                         key={d.id}
                         onClick={() => setDuration(d.id)}
