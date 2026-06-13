@@ -125,7 +125,7 @@ function LampCard({ entry }: { entry: LampEntry }) {
 
       {/* Subject */}
       <p className="text-center text-sm text-gold font-medium leading-tight mt-1">
-        {maskSubject(entry.subject)}
+        {entry.isMine ? entry.subject : maskSubject(entry.subject)}
       </p>
 
       {/* Wish */}
@@ -152,7 +152,7 @@ function LampCard({ entry }: { entry: LampEntry }) {
         <Clock className="size-3" />
         <span>{timeAgo(entry.timestamp)}</span>
         <span>·</span>
-        <span>{desensitizeName(entry.userName)}</span>
+        <span>{entry.isMine ? entry.userName : desensitizeName(entry.userName)}</span>
       </div>
     </motion.div>
   );
