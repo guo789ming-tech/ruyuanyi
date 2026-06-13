@@ -80,7 +80,7 @@ export default function BlessingPage() {
     setShowPayment(true);
   };
 
-  const handlePaymentSuccess = (screenshot?: string) => {
+  const handlePaymentSuccess = () => {
     addBlessingRecord({
       id: `bless_${Date.now()}`,
       name,
@@ -98,7 +98,6 @@ export default function BlessingPage() {
       amount: selectedDuration.price,
       amountNumber: parseFloat(selectedDuration.price.replace("¥", "")) || 0,
       status: "pending",
-      screenshot,
       detail: `为${RELATIONS.find((r) => r.id === relation)?.label || "家人"}${name}祈福 · ${selectedDuration.label}`,
     });
     setView("lighting");

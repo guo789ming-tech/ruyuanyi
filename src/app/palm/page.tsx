@@ -60,7 +60,7 @@ export default function PalmPage() {
     setStep("result");
   };
 
-  const handlePaymentSuccess = (screenshot?: string) => {
+  const handlePaymentSuccess = () => {
     addFortuneRecord({
       id: `palm_${Date.now()}`,
       type: "palm",
@@ -76,7 +76,6 @@ export default function PalmPage() {
       amount: pricing.palm,
       amountNumber: parseFloat(pricing.palm.replace("¥", "")) || 0,
       status: "pending",
-      screenshot,
       detail: `${selectedMaster.name}开示${hand === "left" ? "左手" : "右手"}手相 · 四线解读`,
     });
     payment.markPending();

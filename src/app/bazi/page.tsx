@@ -50,7 +50,7 @@ export default function BaziPage() {
     setActiveTab("chart");
   };
 
-  const handlePaymentSuccess = (screenshot?: string) => {
+  const handlePaymentSuccess = () => {
     addFortuneRecord({
       id: `bazi_${Date.now()}`,
       type: "bazi",
@@ -66,7 +66,6 @@ export default function BaziPage() {
       amount: pricing.bazi,
       amountNumber: parseFloat(pricing.bazi.replace("¥", "")) || 0,
       status: "pending",
-      screenshot,
       detail: `${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
     });
     payment.markPending();

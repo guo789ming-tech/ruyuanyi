@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, Smartphone, Upload, ImageIcon } from "lucide-react";
+import { X, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/Button";
 import { useAdmin } from "@/lib/AdminContext";
 import { delay, cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ interface PaymentModalProps {
   title: string;
   amount: string;
   description?: string;
-  onSuccess: (screenshot?: string) => void;
+  onSuccess: () => void;
   mode?: "mock" | "qrcode";
 }
 
@@ -24,23 +24,13 @@ const PAYMENT_METHODS = [
 
 export function PaymentModal({ open, onClose, title, amount, description, onSuccess, mode = "mock" }: PaymentModalProps) {
   const [method, setMethod] = useState("wechat");
-  const [step, setStep] = useState<"confirm" | "paying" | "upload" | "success">("confirm");
-  const [screenshot, setScreenshot] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [step, setStep] = useState<"confirm" | "paying" | "success">("confirm");
   const { qrCodes } = useAdmin();
 
   const selectedMethod = PAYMENT_METHODS.find((m) => m.id === method)!;
 
   const getQrSrc = (m: typeof PAYMENT_METHODS[number]) => {
     return qrCodes[m.id as "wechat" | "alipay"] || m.defaultQr;
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setScreenshot(reader.result as string);
-    reader.readAsDataURL(file);
   };
 
   const handlePay = async () => {
@@ -57,23 +47,17 @@ export function PaymentModal({ open, onClose, title, amount, description, onSucc
     }
   };
 
-  const handlePaid = () => {
-    setStep("upload");
-  };
-
-  const handleSubmitScreenshot = async () => {
+  const handlePaid = async () => {
     setStep("success");
     await delay(2000);
-    onSuccess(screenshot || undefined);
+    onSuccess();
     setStep("confirm");
-    setScreenshot(null);
     onClose();
   };
 
   const handleClose = () => {
     if (step === "paying" && mode === "mock") return;
     setStep("confirm");
-    setScreenshot(null);
     onClose();
   };
 
@@ -135,7 +119,7 @@ export function PaymentModal({ open, onClose, title, amount, description, onSucc
                   随喜供奉 {amount}
                 </Button>
                 <p className="mt-3 text-center text-xs text-paper-dark/40">
-                  {mode === "mock" ? "此为模拟支付 · 不会产生实际费用" : "扫码随喜供奉 · 支付后上传截图 · 审核通过即可查看"}
+                  {mode === "mock" ? "此为模拟支付 · 不会产生实际费用" : "扫码随喜供奉 · 支付后通知管理员审核"}
                 </p>
               </>
             )}
@@ -174,9 +158,8 @@ export function PaymentModal({ open, onClose, title, amount, description, onSucc
                 </p>
                 <p className="text-xs text-gold/60 font-medium">随喜 {amount}</p>
 
-                <Button variant="ritual" size="lg" className="w-full gap-2" onClick={handlePaid}>
-                  <Upload className="size-4" />
-                  已供奉 · 上传支付截图
+                <Button variant="ritual" size="lg" className="w-full" onClick={handlePaid}>
+                  我已完成供奉
                 </Button>
 
                 <button
@@ -184,63 +167,6 @@ export function PaymentModal({ open, onClose, title, amount, description, onSucc
                   className="text-xs text-paper-dark/40 hover:text-paper-dark/60"
                 >
                   暂不供奉
-                </button>
-              </div>
-            )}
-
-            {step === "upload" && (
-              <div className="py-2 flex flex-col items-center gap-4">
-                <p className="text-sm text-gold font-medium">上传支付截图</p>
-                <p className="text-xs text-paper-dark/60 text-center">
-                  请将微信/支付宝支付成功的页面截图上传<br/>管理员审核通过后即可查看内容
-                </p>
-
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-
-                {screenshot ? (
-                  <div className="relative w-full">
-                    <img
-                      src={screenshot}
-                      alt="支付截图预览"
-                      className="w-full max-h-48 object-contain rounded-lg border border-gold/30"
-                    />
-                    <button
-                      onClick={() => { setScreenshot(null); if (fileRef.current) fileRef.current.value = ""; }}
-                      className="absolute top-1 right-1 flex size-6 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
-                    >
-                      <X className="size-3" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => fileRef.current?.click()}
-                    className="flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gold/30 p-8 w-full hover:border-gold/50 transition-colors"
-                  >
-                    <ImageIcon className="size-8 text-gold/50" />
-                    <span className="text-sm text-paper-dark/60">点击选择支付截图</span>
-                  </button>
-                )}
-
-                <Button
-                  variant="ritual"
-                  size="lg"
-                  className="w-full"
-                  onClick={handleSubmitScreenshot}
-                  disabled={!screenshot}
-                >
-                  提交审核
-                </Button>
-                <button
-                  onClick={() => setStep("paying")}
-                  className="text-xs text-paper-dark/40 hover:text-paper-dark/60"
-                >
-                  返回上一步
                 </button>
               </div>
             )}
@@ -263,7 +189,7 @@ export function PaymentModal({ open, onClose, title, amount, description, onSucc
                   <>
                     <p className="font-display text-lg text-gold">已提交审核</p>
                     <p className="text-sm text-paper-dark/70 text-center">
-                      支付截图已提交，管理员审核通过后<br/>即可查看内容
+                      管理员审核通过后<br/>即可查看内容
                     </p>
                     <p className="text-xs text-paper-dark/50">{amount}</p>
                   </>

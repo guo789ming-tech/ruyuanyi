@@ -45,7 +45,7 @@ export default function NamingPage() {
     setStep("result");
   };
 
-  const handlePaymentSuccess = (screenshot?: string) => {
+  const handlePaymentSuccess = () => {
     const names = MOCK_NAMES.data.names.map((n) => ({
       ...n,
       full_name: surname + n.full_name.slice(1),
@@ -65,7 +65,6 @@ export default function NamingPage() {
       amount: pricing.naming,
       amountNumber: parseFloat(pricing.naming.replace("¥", "")) || 0,
       status: "pending",
-      screenshot,
       detail: `${surname}${gender === "male" ? "男" : "女"}宝宝 · ${nameLength}字名 · ${names[0]?.full_name || ""}`,
     });
     payment.markPending();
