@@ -12,7 +12,7 @@ import { PaymentModal } from "@/components/PaymentModal";
 import { usePaymentWall } from "@/lib/usePaymentWall";
 import { useUser } from "@/lib/UserContext";
 import { useAdmin } from "@/lib/AdminContext";
-import { MOCK_NAMES, NAMING_STYLES, SHICHEN_OPTIONS } from "@/lib/data";
+import { getNamingResults, NAMING_STYLES, SHICHEN_OPTIONS } from "@/lib/data";
 import { delay, cn } from "@/lib/utils";
 
 export default function NamingPage() {
@@ -26,6 +26,7 @@ export default function NamingPage() {
   const [nameLength, setNameLength] = useState<2 | 3>(3);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [error, setError] = useState("");
+  const [namingResult, setNamingResult] = useState<ReturnType<typeof getNamingResults> | null>(null);
   const { addFortuneRecord, addMerit, user } = useUser();
   const { addOrder, pricing } = useAdmin();
   const payment = usePaymentWall("naming", pricing.naming);
@@ -40,21 +41,21 @@ export default function NamingPage() {
     if (!surname.trim()) { setError("请输入姓氏"); return; }
     setError("");
     payment.setIsPaid();
+    const result = getNamingResults({ surname: surname.trim(), gender, year, month, day, shichen, nameLength, styles: selectedStyles });
+    setNamingResult(result);
     setStep("loading");
     await delay(2000);
     setStep("result");
   };
 
   const handlePaymentSuccess = () => {
-    const names = MOCK_NAMES.data.names.map((n) => ({
-      ...n,
-      full_name: surname + n.full_name.slice(1),
-    }));
+    const names = namingResult?.data.names || [];
+    const topName = names[0]?.full_name || "";
     addFortuneRecord({
       id: `naming_${Date.now()}`,
       type: "naming",
       question: `${surname}${gender === "male" ? "男" : "女"}宝宝起名`,
-      result: names[0]?.full_name || "",
+      result: topName,
       timestamp: new Date().toISOString(),
     });
     addMerit(38);
@@ -65,7 +66,7 @@ export default function NamingPage() {
       amount: pricing.naming,
       amountNumber: parseFloat(pricing.naming.replace("¥", "")) || 0,
       status: "pending",
-      detail: `${surname}${gender === "male" ? "男" : "女"}宝宝 · ${nameLength}字名 · ${names[0]?.full_name || ""}`,
+      detail: `${surname}${gender === "male" ? "男" : "女"}宝宝 · ${nameLength}字名 · ${topName}`,
     });
     payment.markPending();
   };
@@ -262,9 +263,10 @@ export default function NamingPage() {
           </div>
         )}
 
-        {step === "result" && (
+        {step === "result" && namingResult && (
           <NamingResult
             surname={surname}
+            result={namingResult}
             price={pricing.naming}
             onBack={() => { setStep("form"); payment.setIsPaid(); }}
             isPaid={payment.isPaid}
@@ -287,18 +289,15 @@ export default function NamingPage() {
   );
 }
 
-function NamingResult({ surname, price, onBack, isPaid, isPending, onUnlock }: { surname: string; price: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
-  const names = MOCK_NAMES.data.names.map((n) => ({
-    ...n,
-    full_name: surname + n.full_name.slice(1),
-  }));
+function NamingResult({ surname, price, onBack, isPaid, isPending, onUnlock, result }: { surname: string; price: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void; result: ReturnType<typeof getNamingResults> }) {
+  const names = result.data.names;
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">
       <div className="rounded-2xl border border-emerald/30 bg-gradient-to-b from-emerald/5 to-xuan-card p-5 text-center">
         <Sparkles className="mx-auto size-8 text-emerald" />
         <p className="mt-2 text-xs text-gold/60">
-          真排八字：{MOCK_NAMES.data.bazi_summary}
+          真排八字：{result.data.bazi_summary}
         </p>
         <p className="mt-1 font-display text-xl text-gold">
           依八字五行 · 从典籍择字 · 精选 30 个候选好名

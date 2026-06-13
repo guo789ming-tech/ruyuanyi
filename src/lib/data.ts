@@ -433,287 +433,411 @@ export const SHICHEN_OPTIONS = [
   { value: "hai", label: "亥时", time: "21:00-23:00" },
 ];
 
-export const MOCK_NAMES = {
-  code: 0,
-  data: {
-    surname: "李",
-    bazi_summary: "丙火日主 · 身强 · 喜水木",
-    wuxing_needed: ["水", "木"],
-    total_available: 30,
-    names: [
-      {
-        rank: 1, full_name: "李沐宸", pinyin: "Mù Chén",
-        name_meaning: "沐为润泽，宸为帝居，寓意承露得泽、器宇轩昂。",
-        poem_ref: "《诗经》「如沐春风」；《论语》「为政以德，譬如北辰」",
-        wuxing_score: 95, wuxing_analysis: "沐属水、宸含土，水土调和，恰补命局所缺之水。",
-        phonetic_score: 92, phonetic_analysis: "声调起伏清亮，开口自然，朗读顺口。",
-        stroke_score: 88, total_stroke: 24,
-        description: "整体气质温润而有气度，适合书卷气与贵气并行的风格。",
-      },
-      {
-        rank: 2, full_name: "李泽楷", pinyin: "Zé Kǎi",
-        name_meaning: "泽为恩泽，楷为楷模，寓意温厚有则。",
-        poem_ref: "《周易》「君子以厚德载物」；《后汉书》「楷模后进」",
-        wuxing_score: 91, wuxing_analysis: "泽属水，楷属木，水木相生，利于培元启智。",
-        phonetic_score: 89, phonetic_analysis: "平仄相间，收尾稳健。",
-        stroke_score: 86, total_stroke: 28,
-        description: "此名端正稳重，适合沉静、自律、成长型气质。",
-      },
-      {
-        rank: 3, full_name: "李清珩", pinyin: "Qīng Héng",
-        name_meaning: "清为澄明，珩为佩玉，寓意清朗端方。",
-        poem_ref: "《楚辞》「纫秋兰以为佩」；《礼记》「君子比德于玉」",
-        wuxing_score: 90, wuxing_analysis: "清属水，珩含金土之意，利于格局清正。",
-        phonetic_score: 90, phonetic_analysis: "发音清亮，尾音挺拔，有书卷感。",
-        stroke_score: 84, total_stroke: 25,
-        description: "名字自带玉佩般的雅致感，适合儒雅路线。",
-      },
-      {
-        rank: 4, full_name: "李承澜", pinyin: "Chéng Lán",
-        name_meaning: "承为承续，澜为大波，寓意志向宏远而不失承载力。",
-        poem_ref: "《尚书》「克承厥后」；《滕王阁序》「层峦耸翠，上出重霄」",
-        wuxing_score: 88, wuxing_analysis: "澜属水，承含土木之意，兼顾气势与平衡。",
-        phonetic_score: 87, phonetic_analysis: "音形大气，读来有层次。",
-        stroke_score: 82, total_stroke: 29,
-        description: "适合希望孩子兼具格局与行动力的取向。",
-      },
-      {
-        rank: 5, full_name: "李书沅", pinyin: "Shū Yuán",
-        name_meaning: "书为文脉，沅为清流，寓意文心清澈。",
-        poem_ref: "《楚辞》「沅有芷兮澧有兰」；《汉书》「书以载道」",
-        wuxing_score: 87, wuxing_analysis: "沅属水，书偏木火文气，整体趋于灵秀。",
-        phonetic_score: 88, phonetic_analysis: "温柔舒展，尾音绵长。",
-        stroke_score: 81, total_stroke: 22,
-        description: "文雅秀逸，适合偏诗意与文化感的审美方向。",
-      },
-      {
-        rank: 6, full_name: "李沛然", pinyin: "Pèi Rán",
-        name_meaning: "沛为丰沛，然为自然，寓意才情丰沛、顺遂从容。",
-        poem_ref: "《孟子》「油然作云，沛然下雨」；《庄子》「道法自然」",
-        wuxing_score: 85, wuxing_analysis: "沛属水，然含水火之调，水气充沛补命局。",
-        phonetic_score: 86, phonetic_analysis: "开口响亮，收尾轻灵，易于叫唤。",
-        stroke_score: 80, total_stroke: 21,
-        description: "名字阳光大气，适合性格开朗外向的孩子。",
-      },
-      {
-        rank: 7, full_name: "李槿言", pinyin: "Jǐn Yán",
-        name_meaning: "槿为木槿花，言为言语，寓意言辞如花之清雅。",
-        poem_ref: "《诗经》「颜如舜华」；《论语》「言寡尤，行寡悔」",
-        wuxing_score: 83, wuxing_analysis: "槿属木、言含金水，木水相生有助灵气。",
-        phonetic_score: 91, phonetic_analysis: "音色清秀，婉而不弱，有文艺气息。",
-        stroke_score: 79, total_stroke: 23,
-        description: "名字纤细而不柔弱，适合偏文静内秀的气质。",
-      },
-      {
-        rank: 8, full_name: "李砚清", pinyin: "Yàn Qīng",
-        name_meaning: "砚为文房之宝，清为澄澈，寓意文心清正。",
-        poem_ref: "《文心雕龙》「陶钧文思，贵在虚静」",
-        wuxing_score: 86, wuxing_analysis: "砚含土金、清属水，水土金相生有助稳健。",
-        phonetic_score: 85, phonetic_analysis: "沉着有力，有书生气质。",
-        stroke_score: 83, total_stroke: 26,
-        description: "名字沉静淡雅，适合走学术与文化路线。",
-      },
-      {
-        rank: 9, full_name: "李知弦", pinyin: "Zhī Xián",
-        name_meaning: "知为明悟，弦为乐律，寓意知音识律、心有灵犀。",
-        poem_ref: "《礼记》「知止而后有定」；《琵琶行》「转轴拨弦三两声」",
-        wuxing_score: 82, wuxing_analysis: "知属金火、弦含木水，调和五行的同时灵气倍增。",
-        phonetic_score: 89, phonetic_analysis: "声韵优美如曲，读来余音绕梁。",
-        stroke_score: 78, total_stroke: 24,
-        description: "文艺气息浓郁，适合音乐或艺术天赋突出的孩子。",
-      },
-      {
-        rank: 10, full_name: "李景澄", pinyin: "Jǐng Chéng",
-        name_meaning: "景为光景，澄为清澈，寓意志向光明、心境澄明。",
-        poem_ref: "《岳阳楼记》「春和景明」；《淮南子》「澄心清意」",
-        wuxing_score: 84, wuxing_analysis: "澄属水，景含火木之光，水清火明格局朗润。",
-        phonetic_score: 83, phonetic_analysis: "前响后清，有层次感。",
-        stroke_score: 82, total_stroke: 27,
-        description: "大气而不失雅致，适合有领导气质的孩子。",
-      },
-      {
-        rank: 11, full_name: "李牧遥", pinyin: "Mù Yáo",
-        name_meaning: "牧为涵养，遥为高远，寓意心怀宽广、志存高远。",
-        poem_ref: "《庄子》「逍遥游」；《易经》「牧以卑自牧也」",
-        wuxing_score: 81, wuxing_analysis: "牧含土水、遥属火木，多元素和谐相生。",
-        phonetic_score: 87, phonetic_analysis: "开阔舒展，有山林之气。",
-        stroke_score: 77, total_stroke: 25,
-        description: "名字透出自由与旷达，适合天性洒脱的孩子。",
-      },
-      {
-        rank: 12, full_name: "李予安", pinyin: "Yǔ Ān",
-        name_meaning: "予为给予，安为安宁，寓意予人以安、自心亦定。",
-        poem_ref: "《大学》「知止而后有定，定而后能安」",
-        wuxing_score: 80, wuxing_analysis: "予含水意、安属土性，水土相安有利根基。",
-        phonetic_score: 88, phonetic_analysis: "唇齿音柔和，给人亲切感。",
-        stroke_score: 79, total_stroke: 16,
-        description: "名字温润简洁，有暖意与安心感。",
-      },
-      {
-        rank: 13, full_name: "李若溪", pinyin: "Ruò Xī",
-        name_meaning: "若为如似，溪为清流，寓意如溪水般清澈从容。",
-        poem_ref: "《道德经》「上善若水」；《兰亭集序》「清流激湍」",
-        wuxing_score: 89, wuxing_analysis: "若含木水、溪属水，水气充盈恰补命局。",
-        phonetic_score: 91, phonetic_analysis: "轻音入耳，如溪水潺潺。",
-        stroke_score: 84, total_stroke: 22,
-        description: "名字清雅自然，适合温婉平和的气质。",
-      },
-      {
-        rank: 14, full_name: "李怀瑾", pinyin: "Huái Jǐn",
-        name_meaning: "怀为胸怀，瑾为美玉，寓意怀瑾握瑜、品德如玉。",
-        poem_ref: "《楚辞》「怀瑾握瑜兮」；《诗经》「言念君子，温其如玉」",
-        wuxing_score: 87, wuxing_analysis: "怀含水土、瑾属金土，土厚金清有利稳重。",
-        phonetic_score: 84, phonetic_analysis: "高低有致，字正腔圆。",
-        stroke_score: 85, total_stroke: 30,
-        description: "君子之风，适合品格教育为先的家庭。",
-      },
-      {
-        rank: 15, full_name: "李修远", pinyin: "Xiū Yuǎn",
-        name_meaning: "修为修养，远为高远，寓意修身致远、厚积薄发。",
-        poem_ref: "《大学》「修身齐家治国平天下」；《论语》「任重而道远」",
-        wuxing_score: 83, wuxing_analysis: "修含金木、远属土火，整体平衡且有向上之势。",
-        phonetic_score: 82, phonetic_analysis: "庄重稳健，有书卷气。",
-        stroke_score: 80, total_stroke: 23,
-        description: "名字端正有志向，适合踏实进取的孩子。",
-      },
-      {
-        rank: 16, full_name: "李翊辰", pinyin: "Yì Chén",
-        name_meaning: "翊为辅佐腾飞，辰为星辰时运，寓意天时助飞。",
-        poem_ref: "《诗经》「翊翊其羽」；《尚书》「抚辰凝绩」",
-        wuxing_score: 86, wuxing_analysis: "翊含木、辰属土水，土厚木秀有助成长。",
-        phonetic_score: 85, phonetic_analysis: "文白兼具，朗朗上口。",
-        stroke_score: 81, total_stroke: 25,
-        description: "名字独特而不生僻，充满向上之气。",
-      },
-      {
-        rank: 17, full_name: "李逸尘", pinyin: "Yì Chén",
-        name_meaning: "逸为超逸，尘为尘世，寓意超然于尘而不离尘。",
-        poem_ref: "《庄子》「彷徨乎尘垢之外，逍遥乎无为之业」",
-        wuxing_score: 79, wuxing_analysis: "逸属木火、尘含土金，灵动中有根基。",
-        phonetic_score: 86, phonetic_analysis: "声调飘逸，有禅意。",
-        stroke_score: 75, total_stroke: 27,
-        description: "名字透出洒脱禅意，适合不拘一格的孩子。",
-      },
-      {
-        rank: 18, full_name: "李听澜", pinyin: "Tīng Lán",
-        name_meaning: "听为聆听，澜为波澜，寓意静听波澜、心境如海。",
-        poem_ref: "《岳阳楼记》「浩浩汤汤，横无际涯」",
-        wuxing_score: 85, wuxing_analysis: "听含金水、澜属水，水气充沛，耳聪目明。",
-        phonetic_score: 83, phonetic_analysis: "一个听字活了全名，辨识度极高。",
-        stroke_score: 78, total_stroke: 26,
-        description: "独树一帜的名字，适合个性鲜明的孩子。",
-      },
-      {
-        rank: 19, full_name: "李子墨", pinyin: "Zǐ Mò",
-        name_meaning: "子为文脉传承，墨为文房之魂，寓意文章传世。",
-        poem_ref: "《论语》「子曰」千古开篇；《墨经》以墨为道",
-        wuxing_score: 82, wuxing_analysis: "子属水、墨含土金，水土相安且文星高照。",
-        phonetic_score: 84, phonetic_analysis: "简洁明快，两字皆有好意象。",
-        stroke_score: 82, total_stroke: 19,
-        description: "名字极简却分量足，两个字承载千年文化。",
-      },
-      {
-        rank: 20, full_name: "李彦舟", pinyin: "Yàn Zhōu",
-        name_meaning: "彦为才德之士，舟为渡船，寓意才德俱备、渡人自渡。",
-        poem_ref: "《诗经》「邦之彦兮」；《金刚经》「汝等比丘，知我说法，如筏喻者」",
-        wuxing_score: 84, wuxing_analysis: "彦含木金、舟属木水，木水相生主才华。",
-        phonetic_score: 88, phonetic_analysis: "咬字清晰，有一帆风顺的联想。",
-        stroke_score: 80, total_stroke: 23,
-        description: "兼具古典之雅与一帆风顺的祝福。",
-      },
-      {
-        rank: 21, full_name: "李栖梧", pinyin: "Qī Wú",
-        name_meaning: "栖为栖居，梧为梧桐，寓意良禽择木、凤栖梧桐。",
-        poem_ref: "《诗经》「凤凰鸣矣，于彼高岗。梧桐生矣，于彼朝阳」",
-        wuxing_score: 88, wuxing_analysis: "栖含木水、梧属木，双木成林水润其根。",
-        phonetic_score: 86, phonetic_analysis: "音有画意，古风盎然。",
-        stroke_score: 79, total_stroke: 26,
-        description: "名字自带诗经画面感，古雅非凡。",
-      },
-      {
-        rank: 22, full_name: "李昀泽", pinyin: "Yún Zé",
-        name_meaning: "昀为日光，泽为恩泽，寓意阳光普照、恩泽四方。",
-        poem_ref: "《淮南子》「日中有踆乌」；《楚辞》「芳与泽其杂糅兮」",
-        wuxing_score: 90, wuxing_analysis: "昀属火、泽属水，水火既济润泽光明。",
-        phonetic_score: 85, phonetic_analysis: "音形端正，四平八稳。",
-        stroke_score: 83, total_stroke: 24,
-        description: "有阳光之暖与流水之润，平衡美好的名字。",
-      },
-      {
-        rank: 23, full_name: "李恩澈", pinyin: "Ēn Chè",
-        name_meaning: "恩为感恩，澈为清澈，寓意知恩于心、心澈如水。",
-        poem_ref: "《诗经》「投我以木桃，报之以琼瑶」",
-        wuxing_score: 81, wuxing_analysis: "恩含土金、澈属水，水土含金利于厚道与智慧并重。",
-        phonetic_score: 83, phonetic_analysis: "前后分明，有深情之感。",
-        stroke_score: 77, total_stroke: 24,
-        description: "名字温厚有情，注重品格的家长之选。",
-      },
-      {
-        rank: 24, full_name: "李霁川", pinyin: "Jì Chuān",
-        name_meaning: "霁为雨过天晴，川为山川河流，寓意雨霁川清、气象万千。",
-        poem_ref: "《滕王阁序》「云销雨霁，彩彻区明」",
-        wuxing_score: 86, wuxing_analysis: "霁含水木、川属水，双水润泽格局清朗。",
-        phonetic_score: 87, phonetic_analysis: "雨后初晴般的澄澈感，余韵悠长。",
-        stroke_score: 81, total_stroke: 24,
-        description: "名字有自然气象之美，寓意否极泰来。",
-      },
-      {
-        rank: 25, full_name: "李瑾瑜", pinyin: "Jǐn Yú",
-        name_meaning: "瑾瑜皆为美玉，双玉合璧，寓意品德与才情双美。",
-        poem_ref: "《楚辞》「怀瑾握瑜」；《说文》「瑾瑜，美玉也」",
-        wuxing_score: 92, wuxing_analysis: "瑾含金土、瑜属金水，金水相生，灵气与厚重并兼。",
-        phonetic_score: 90, phonetic_analysis: "叠韵美玉，一字千金，读来如佩玉叮当。",
-        stroke_score: 86, total_stroke: 27,
-        description: "名字精致华美，适合对品质有极致追求的家庭。",
-      },
-      {
-        rank: 26, full_name: "李柏舟", pinyin: "Bǎi Zhōu",
-        name_meaning: "柏为松柏长青，舟为渡船远航，寓意坚毅前行。",
-        poem_ref: "《论语》「岁寒，然后知松柏之后凋也」",
-        wuxing_score: 80, wuxing_analysis: "柏属木、舟属木水，木水相生根基扎实。",
-        phonetic_score: 81, phonetic_analysis: "沉稳有力，有坚实可靠的感觉。",
-        stroke_score: 76, total_stroke: 22,
-        description: "名字平实而有筋骨，适合低调坚韧的性格。",
-      },
-      {
-        rank: 27, full_name: "李砚书", pinyin: "Yàn Shū",
-        name_meaning: "砚为墨池，书为典籍，寓意文墨传家、书香门第。",
-        poem_ref: "《文房四谱》「砚者，研也，研墨使和濡也」",
-        wuxing_score: 83, wuxing_analysis: "砚含土金、书属木火，文曲星高照。",
-        phonetic_score: 89, phonetic_analysis: "字字有声，文人风骨。",
-        stroke_score: 82, total_stroke: 20,
-        description: "最简单的文房意象，书香气质不言自明。",
-      },
-      {
-        rank: 28, full_name: "李皓然", pinyin: "Hào Rán",
-        name_meaning: "皓为皓月之白，然为泰然之态，寓意光明磊落。",
-        poem_ref: "《岳阳楼记》「皓月千里」；《孟子》「我善养吾浩然之气」",
-        wuxing_score: 84, wuxing_analysis: "皓属金水、然含火木，金水相映格局清亮。",
-        phonetic_score: 88, phonetic_analysis: "鲜明嘹亮，充满正气。",
-        stroke_score: 83, total_stroke: 23,
-        description: "浩然正气在名字中流淌，适合刚正不阿的性格。",
-      },
-      {
-        rank: 29, full_name: "李锦樾", pinyin: "Jǐn Yuè",
-        name_meaning: "锦为锦绣，樾为树荫，寓意锦上添花、荫庇有福。",
-        poem_ref: "《诗经》「锦衾烂兮」；《淮南子》「荫不祥之木」",
-        wuxing_score: 82, wuxing_analysis: "锦属金火、樾属木，金木相济主贵气。",
-        phonetic_score: 84, phonetic_analysis: "音韵绵密，有福荫之暖意。",
-        stroke_score: 79, total_stroke: 29,
-        description: "名字有华贵与福荫的双重寓意，吉祥美好。",
-      },
-      {
-        rank: 30, full_name: "李沅芷", pinyin: "Yuán Zhǐ",
-        name_meaning: "沅为沅水，芷为香草，寓意沅芷澧兰、性洁行芳。",
-        poem_ref: "《楚辞》「沅有芷兮澧有兰，思公子兮未敢言」",
-        wuxing_score: 91, wuxing_analysis: "沅属水、芷含木香，水木清华灵气充盈。",
-        phonetic_score: 93, phonetic_analysis: "屈子笔下的香草美人，音韵极致优美。",
-        stroke_score: 85, total_stroke: 23,
-        description: "最美的楚辞意象，诗情画意尽在其中。",
-      },
-    ],
-  },
-};
+// ---- 八字推演（命名用） ----
+function getDayGan(day: number): string {
+  const gans = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+  return gans[(day - 1) % 10];
+}
+function getShichenElement(shichen: string): string {
+  const map: Record<string,string> = { "子时":"水","丑时":"土","寅时":"木","卯时":"木","辰时":"土","巳时":"火","午时":"火","未时":"土","申时":"金","酉时":"金","戌时":"土","亥时":"水" };
+  return map[shichen] || "水";
+}
+function getSeasonElement(month: number): string {
+  if (month >= 2 && month <= 4) return "木";
+  if (month >= 5 && month <= 7) return "火";
+  if (month >= 8 && month <= 10) return "金";
+  return "水";
+}
+function deriveWuxingNeeded(month: number, day: number, shichen: string): { day_master: string; strength: string; needed: string[]; summary: string } {
+  const dayGan = getDayGan(day);
+  const dayElement = { "甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水" }[dayGan]!;
+  const season = getSeasonElement(month);
+  const shichenEl = getShichenElement(shichen);
+
+  // Strength: born in same season → strong, otherwise moderate/weak
+  const strong = dayElement === season || (dayElement === "火" && season === "木") || (dayElement === "土" && season === "火") || (dayElement === "金" && season === "土") || (dayElement === "水" && season === "金");
+  const strength = strong ? "身强" : "身弱";
+
+  // Determine needed elements based on strength theory
+  let needed: string[];
+  if (strong) {
+    // Need to drain/control: generate child element + control element
+    const drain: Record<string,string> = { "木":"火","火":"土","土":"金","金":"水","水":"木" };
+    const control: Record<string,string> = { "木":"金","火":"水","土":"木","金":"火","水":"土" };
+    needed = [drain[dayElement], control[dayElement]];
+    // Add a supporting element based on shichen
+    if (!needed.includes(shichenEl)) needed.push(shichenEl);
+  } else {
+    // Need to support: same element + parent element
+    const parent: Record<string,string> = { "木":"水","火":"木","土":"火","金":"土","水":"金" };
+    needed = [dayElement, parent[dayElement]];
+    if (!needed.includes(shichenEl)) needed.push(shichenEl);
+  }
+
+  const seasonNames = ["","正","二","三","四","五","六","七","八","九","十","冬","腊"];
+  const summary = `${dayGan}${dayElement}日主 · ${strength} · 生于${seasonNames[month]}月 · 喜${needed.slice(0,2).join("")}`;
+
+  return { day_master: `${dayGan}${dayElement}日主`, strength, needed: [...new Set(needed)], summary };
+}
+
+// 名字池：每个名字标注其五行属性
+interface NameEntry {
+  rank: number; full_name: string; pinyin: string; elements: string[];
+  name_meaning: string; poem_ref: string;
+  wuxing_score: number; wuxing_analysis: string;
+  phonetic_score: number; phonetic_analysis: string;
+  stroke_score: number; total_stroke: number;
+  description: string;
+}
+
+const NAME_POOL: NameEntry[] = [
+  { rank: 1, full_name: "X沐宸", pinyin: "Mù Chén", elements: ["水","土"],
+    name_meaning: "沐为润泽，宸为帝居，寓意承露得泽、器宇轩昂。",
+    poem_ref: "《诗经》「如沐春风」；《论语》「为政以德，譬如北辰」",
+    wuxing_score: 95, wuxing_analysis: "沐属水、宸含土，水土调和，恰补命局。",
+    phonetic_score: 92, phonetic_analysis: "声调起伏清亮，开口自然，朗读顺口。",
+    stroke_score: 88, total_stroke: 24, description: "温润有气度，适合书卷气与贵气并行的风格。" },
+  { rank: 2, full_name: "X泽楷", pinyin: "Zé Kǎi", elements: ["水","木"],
+    name_meaning: "泽为恩泽，楷为楷模，寓意温厚有则。",
+    poem_ref: "《周易》「君子以厚德载物」；《后汉书》「楷模后进」",
+    wuxing_score: 91, wuxing_analysis: "泽属水，楷属木，水木相生，利于培元启智。",
+    phonetic_score: 89, phonetic_analysis: "平仄相间，收尾稳健。",
+    stroke_score: 86, total_stroke: 28, description: "端正稳重，适合沉静、自律、成长型气质。" },
+  { rank: 3, full_name: "X清珩", pinyin: "Qīng Héng", elements: ["水","金"],
+    name_meaning: "清为澄明，珩为佩玉，寓意清朗端方。",
+    poem_ref: "《楚辞》「纫秋兰以为佩」；《礼记》「君子比德于玉」",
+    wuxing_score: 90, wuxing_analysis: "清属水，珩含金，金水相生，利于格局清正。",
+    phonetic_score: 90, phonetic_analysis: "发音清亮，尾音挺拔，有书卷感。",
+    stroke_score: 84, total_stroke: 25, description: "自带玉佩般的雅致感，适合儒雅路线。" },
+  { rank: 4, full_name: "X承澜", pinyin: "Chéng Lán", elements: ["土","水"],
+    name_meaning: "承为承续，澜为大波，寓意志向宏远而不失承载力。",
+    poem_ref: "《尚书》「克承厥后」；《滕王阁序》「层峦耸翠，上出重霄」",
+    wuxing_score: 88, wuxing_analysis: "澜属水，承含土木，兼顾气势与平衡。",
+    phonetic_score: 87, phonetic_analysis: "音形大气，读来有层次。",
+    stroke_score: 82, total_stroke: 29, description: "兼具格局与行动力。" },
+  { rank: 5, full_name: "X书沅", pinyin: "Shū Yuán", elements: ["火","水"],
+    name_meaning: "书为文脉，沅为清流，寓意文心清澈。",
+    poem_ref: "《楚辞》「沅有芷兮澧有兰」；《汉书》「书以载道」",
+    wuxing_score: 87, wuxing_analysis: "沅属水，书偏木火文气，整体趋于灵秀。",
+    phonetic_score: 88, phonetic_analysis: "温柔舒展，尾音绵长。",
+    stroke_score: 81, total_stroke: 22, description: "文雅秀逸，适合偏诗意与文化感的审美。" },
+  { rank: 6, full_name: "X沛然", pinyin: "Pèi Rán", elements: ["水","火"],
+    name_meaning: "沛为丰沛，然为自然，寓意才情丰沛、顺遂从容。",
+    poem_ref: "《孟子》「油然作云，沛然下雨」；《庄子》「道法自然」",
+    wuxing_score: 85, wuxing_analysis: "沛属水，然含水火之调，水气充沛。",
+    phonetic_score: 86, phonetic_analysis: "开口响亮，收尾轻灵，易于叫唤。",
+    stroke_score: 80, total_stroke: 21, description: "阳光大气，适合开朗外向的孩子。" },
+  { rank: 7, full_name: "X槿言", pinyin: "Jǐn Yán", elements: ["木","金"],
+    name_meaning: "槿为木槿花，言为言语，寓意言辞如花之清雅。",
+    poem_ref: "《诗经》「颜如舜华」；《论语》「言寡尤，行寡悔」",
+    wuxing_score: 83, wuxing_analysis: "槿属木、言含金，木金相济灵气倍增。",
+    phonetic_score: 91, phonetic_analysis: "音色清秀，婉而不弱，有文艺气息。",
+    stroke_score: 79, total_stroke: 23, description: "纤细而不柔弱，适合文静内秀的气质。" },
+  { rank: 8, full_name: "X砚清", pinyin: "Yàn Qīng", elements: ["土","水"],
+    name_meaning: "砚为文房之宝，清为澄澈，寓意文心清正。",
+    poem_ref: "《文心雕龙》「陶钧文思，贵在虚静」",
+    wuxing_score: 86, wuxing_analysis: "砚含土金、清属水，水土相安有助稳健。",
+    phonetic_score: 85, phonetic_analysis: "沉着有力，有书生气质。",
+    stroke_score: 83, total_stroke: 26, description: "沉静淡雅，适合学术与文化路线。" },
+  { rank: 9, full_name: "X知弦", pinyin: "Zhī Xián", elements: ["火","水"],
+    name_meaning: "知为明悟，弦为乐律，寓意知音识律、心有灵犀。",
+    poem_ref: "《礼记》「知止而后有定」；《琵琶行》「转轴拨弦三两声」",
+    wuxing_score: 82, wuxing_analysis: "知属火、弦含水，水火既济灵气逼人。",
+    phonetic_score: 89, phonetic_analysis: "声韵优美如曲，读来余音绕梁。",
+    stroke_score: 78, total_stroke: 24, description: "文艺气息浓郁，适合有音乐天赋的孩子。" },
+  { rank: 10, full_name: "X景澄", pinyin: "Jǐng Chéng", elements: ["火","水"],
+    name_meaning: "景为光景，澄为清澈，寓意志向光明、心境澄明。",
+    poem_ref: "《岳阳楼记》「春和景明」；《淮南子》「澄心清意」",
+    wuxing_score: 84, wuxing_analysis: "澄属水，景含火光，水清火明格局朗润。",
+    phonetic_score: 83, phonetic_analysis: "前响后清，有层次感。",
+    stroke_score: 82, total_stroke: 27, description: "大气而不失雅致，适合有领导气质的孩子。" },
+  { rank: 11, full_name: "X牧遥", pinyin: "Mù Yáo", elements: ["土","火"],
+    name_meaning: "牧为涵养，遥为高远，寓意心怀宽广、志存高远。",
+    poem_ref: "《庄子》「逍遥游」；《易经》「牧以卑自牧也」",
+    wuxing_score: 81, wuxing_analysis: "牧含土水、遥属火，土厚火明根基扎实。",
+    phonetic_score: 87, phonetic_analysis: "开阔舒展，有山林之气。",
+    stroke_score: 77, total_stroke: 25, description: "透出自由与旷达，适合天性洒脱的孩子。" },
+  { rank: 12, full_name: "X予安", pinyin: "Yǔ Ān", elements: ["土","土"],
+    name_meaning: "予为给予，安为安宁，寓意予人以安、自心亦定。",
+    poem_ref: "《大学》「知止而后有定，定而后能安」",
+    wuxing_score: 80, wuxing_analysis: "予含水土、安属土性，双土培元根基厚实。",
+    phonetic_score: 88, phonetic_analysis: "唇齿音柔和，给人亲切感。",
+    stroke_score: 79, total_stroke: 16, description: "温润简洁，有暖意与安心感。" },
+  { rank: 13, full_name: "X若溪", pinyin: "Ruò Xī", elements: ["木","水"],
+    name_meaning: "若为如似，溪为清流，寓意如溪水般清澈从容。",
+    poem_ref: "《道德经》「上善若水」；《兰亭集序》「清流激湍」",
+    wuxing_score: 89, wuxing_analysis: "若含木水、溪属水，水木清华灵气充沛。",
+    phonetic_score: 91, phonetic_analysis: "轻音入耳，如溪水潺潺。",
+    stroke_score: 84, total_stroke: 22, description: "清雅自然，适合温婉平和的气质。" },
+  { rank: 14, full_name: "X怀瑾", pinyin: "Huái Jǐn", elements: ["水","金"],
+    name_meaning: "怀为胸怀，瑾为美玉，寓意怀瑾握瑜、品德如玉。",
+    poem_ref: "《楚辞》「怀瑾握瑜兮」；《诗经》「言念君子，温其如玉」",
+    wuxing_score: 87, wuxing_analysis: "怀含水土、瑾属金，土生金而水润之。",
+    phonetic_score: 84, phonetic_analysis: "高低有致，字正腔圆，有君子之风。",
+    stroke_score: 85, total_stroke: 30, description: "君子之风，适合品格教育为先的家庭。" },
+  { rank: 15, full_name: "X修远", pinyin: "Xiū Yuǎn", elements: ["金","土"],
+    name_meaning: "修为修养，远为高远，寓意修身致远、厚积薄发。",
+    poem_ref: "《大学》「修身齐家治国平天下」；《论语》「任重而道远」",
+    wuxing_score: 83, wuxing_analysis: "修含金木、远属土火，土厚金清有向上升华之势。",
+    phonetic_score: 82, phonetic_analysis: "庄重稳健，有书卷气。",
+    stroke_score: 80, total_stroke: 23, description: "端正有志向，适合踏实进取的孩子。" },
+  { rank: 16, full_name: "X翊辰", pinyin: "Yì Chén", elements: ["木","土"],
+    name_meaning: "翊为辅佐腾飞，辰为星辰时运，寓意天时助飞。",
+    poem_ref: "《诗经》「翊翊其羽」；《尚书》「抚辰凝绩」",
+    wuxing_score: 86, wuxing_analysis: "翊含木、辰属土水，土厚木秀有助成长。",
+    phonetic_score: 85, phonetic_analysis: "文白兼具，朗朗上口。",
+    stroke_score: 81, total_stroke: 25, description: "独特而不生僻，充满向上之气。" },
+  { rank: 17, full_name: "X逸尘", pinyin: "Yì Chén", elements: ["木","土"],
+    name_meaning: "逸为超逸，尘为尘世，寓意超然于尘而不离尘。",
+    poem_ref: "《庄子》「彷徨乎尘垢之外，逍遥乎无为之业」",
+    wuxing_score: 79, wuxing_analysis: "逸属木火、尘含土金，灵动中有根基。",
+    phonetic_score: 86, phonetic_analysis: "声调飘逸，有禅意。",
+    stroke_score: 75, total_stroke: 27, description: "洒脱禅意，适合不拘一格的孩子。" },
+  { rank: 18, full_name: "X听澜", pinyin: "Tīng Lán", elements: ["金","水"],
+    name_meaning: "听为聆听，澜为波澜，寓意静听波澜、心境如海。",
+    poem_ref: "《岳阳楼记》「浩浩汤汤，横无际涯」",
+    wuxing_score: 85, wuxing_analysis: "听含金水、澜属水，金水双清耳聪目明。",
+    phonetic_score: 83, phonetic_analysis: "一个听字活了全名，辨识度极高。",
+    stroke_score: 78, total_stroke: 26, description: "独树一帜，适合个性鲜明的孩子。" },
+  { rank: 19, full_name: "X子墨", pinyin: "Zǐ Mò", elements: ["水","土"],
+    name_meaning: "子为文脉传承，墨为文房之魂，寓意文章传世。",
+    poem_ref: "《论语》「子曰」千古开篇；《墨经》以墨为道",
+    wuxing_score: 82, wuxing_analysis: "子属水、墨含土金，水土相安文星高照。",
+    phonetic_score: 84, phonetic_analysis: "简洁明快，两字皆有好意象。",
+    stroke_score: 82, total_stroke: 19, description: "极简却分量足，两个字承载千年文化。" },
+  { rank: 20, full_name: "X彦舟", pinyin: "Yàn Zhōu", elements: ["木","水"],
+    name_meaning: "彦为才德之士，舟为渡船，寓意才德俱备、渡人自渡。",
+    poem_ref: "《诗经》「邦之彦兮」；《金刚经》「如筏喻者」",
+    wuxing_score: 84, wuxing_analysis: "彦含木、舟属水，水木清华主才华。",
+    phonetic_score: 88, phonetic_analysis: "咬字清晰，有一帆风顺的联想。",
+    stroke_score: 80, total_stroke: 23, description: "古典之雅与一帆风顺的祝福兼得。" },
+  { rank: 21, full_name: "X栖梧", pinyin: "Qī Wú", elements: ["木","木"],
+    name_meaning: "栖为栖居，梧为梧桐，寓意良禽择木、凤栖梧桐。",
+    poem_ref: "《诗经》「凤凰鸣矣，于彼高岗。梧桐生矣，于彼朝阳」",
+    wuxing_score: 88, wuxing_analysis: "双木成林，栖梧皆为木属，木秀于林灵气充盈。",
+    phonetic_score: 86, phonetic_analysis: "音有画意，古风盎然。",
+    stroke_score: 79, total_stroke: 26, description: "自带诗经画面感，古雅非凡。" },
+  { rank: 22, full_name: "X昀泽", pinyin: "Yún Zé", elements: ["火","水"],
+    name_meaning: "昀为日光，泽为恩泽，寓意阳光普照、恩泽四方。",
+    poem_ref: "《淮南子》「日中有踆乌」；《楚辞》「芳与泽其杂糅兮」",
+    wuxing_score: 90, wuxing_analysis: "昀属火、泽属水，水火既济润泽光明。",
+    phonetic_score: 85, phonetic_analysis: "音形端正，四平八稳。",
+    stroke_score: 83, total_stroke: 24, description: "有阳光之暖与流水之润，平衡美好的名字。" },
+  { rank: 23, full_name: "X恩澈", pinyin: "Ēn Chè", elements: ["土","水"],
+    name_meaning: "恩为感恩，澈为清澈，寓意知恩于心、心澈如水。",
+    poem_ref: "《诗经》「投我以木桃，报之以琼瑶」",
+    wuxing_score: 81, wuxing_analysis: "恩含土金、澈属水，土厚水清厚道与智慧并重。",
+    phonetic_score: 83, phonetic_analysis: "前后分明，有深情之感。",
+    stroke_score: 77, total_stroke: 24, description: "温厚有情，注重品格的家长之选。" },
+  { rank: 24, full_name: "X霁川", pinyin: "Jì Chuān", elements: ["水","水"],
+    name_meaning: "霁为雨过天晴，川为山川河流，寓意雨霁川清、气象万千。",
+    poem_ref: "《滕王阁序》「云销雨霁，彩彻区明」",
+    wuxing_score: 86, wuxing_analysis: "双水并流，霁川皆为水属，润泽通透格局清朗。",
+    phonetic_score: 87, phonetic_analysis: "雨后初晴般的澄澈感，余韵悠长。",
+    stroke_score: 81, total_stroke: 24, description: "有自然气象之美，寓意否极泰来。" },
+  { rank: 25, full_name: "X瑾瑜", pinyin: "Jǐn Yú", elements: ["金","金"],
+    name_meaning: "瑾瑜皆为美玉，双玉合璧，寓意品德与才情双美。",
+    poem_ref: "《楚辞》「怀瑾握瑜」；《说文》「瑾瑜，美玉也」",
+    wuxing_score: 92, wuxing_analysis: "双金辉映，瑾瑜皆为金属，金声玉振贵气逼人。",
+    phonetic_score: 90, phonetic_analysis: "叠韵美玉，读来如佩玉叮当。",
+    stroke_score: 86, total_stroke: 27, description: "精致华美，适合对品质有极致追求的家庭。" },
+  { rank: 26, full_name: "X柏舟", pinyin: "Bǎi Zhōu", elements: ["木","水"],
+    name_meaning: "柏为松柏长青，舟为渡船远航，寓意坚毅前行。",
+    poem_ref: "《论语》「岁寒，然后知松柏之后凋也」",
+    wuxing_score: 80, wuxing_analysis: "柏属木、舟属水，水木清华根基扎实。",
+    phonetic_score: 81, phonetic_analysis: "沉稳有力，有坚实可靠的感觉。",
+    stroke_score: 76, total_stroke: 22, description: "平实而有筋骨，适合低调坚韧的性格。" },
+  { rank: 27, full_name: "X砚书", pinyin: "Yàn Shū", elements: ["土","火"],
+    name_meaning: "砚为墨池，书为典籍，寓意文墨传家、书香门第。",
+    poem_ref: "《文房四谱》「砚者，研也，研墨使和濡也」",
+    wuxing_score: 83, wuxing_analysis: "砚含土金、书属木火，文曲星高照。",
+    phonetic_score: 89, phonetic_analysis: "字字有声，文人风骨。",
+    stroke_score: 82, total_stroke: 20, description: "最简单的文房意象，书香气质不言自明。" },
+  { rank: 28, full_name: "X皓然", pinyin: "Hào Rán", elements: ["金","火"],
+    name_meaning: "皓为皓月之白，然为泰然之态，寓意光明磊落。",
+    poem_ref: "《岳阳楼记》「皓月千里」；《孟子》「我善养吾浩然之气」",
+    wuxing_score: 84, wuxing_analysis: "皓属金水、然含火木，金火相映格局清亮。",
+    phonetic_score: 88, phonetic_analysis: "鲜明嘹亮，充满正气。",
+    stroke_score: 83, total_stroke: 23, description: "浩然正气，适合刚正不阿的性格。" },
+  { rank: 29, full_name: "X锦樾", pinyin: "Jǐn Yuè", elements: ["金","木"],
+    name_meaning: "锦为锦绣，樾为树荫，寓意锦上添花、荫庇有福。",
+    poem_ref: "《诗经》「锦衾烂兮」；《淮南子》「荫不祥之木」",
+    wuxing_score: 82, wuxing_analysis: "锦属金火、樾属木，金木相济主贵气。",
+    phonetic_score: 84, phonetic_analysis: "音韵绵密，有福荫之暖意。",
+    stroke_score: 79, total_stroke: 29, description: "有华贵与福荫的双重寓意，吉祥美好。" },
+  { rank: 30, full_name: "X沅芷", pinyin: "Yuán Zhǐ", elements: ["水","木"],
+    name_meaning: "沅为沅水，芷为香草，寓意沅芷澧兰、性洁行芳。",
+    poem_ref: "《楚辞》「沅有芷兮澧有兰，思公子兮未敢言」",
+    wuxing_score: 91, wuxing_analysis: "沅属水、芷含木香，水木清华灵气充盈。",
+    phonetic_score: 93, phonetic_analysis: "屈子笔下的香草美人，音韵极致优美。",
+    stroke_score: 85, total_stroke: 23, description: "最美的楚辞意象，诗情画意尽在其中。" },
+  // ---- 新增名字 ----
+  { rank: 31, full_name: "X润禾", pinyin: "Rùn Hé", elements: ["水","木"],
+    name_meaning: "润为滋润，禾为嘉禾，寓意雨露润苗、生生不息。",
+    poem_ref: "《诗经》「彼黍离离，彼稷之苗」",
+    wuxing_score: 88, wuxing_analysis: "润属水、禾属木，水木清华生机盎然。",
+    phonetic_score: 85, phonetic_analysis: "圆润饱满，有田野之清新。",
+    stroke_score: 80, total_stroke: 21, description: "朴实中有灵气，适合自然气质的名字。" },
+  { rank: 32, full_name: "X铭泽", pinyin: "Míng Zé", elements: ["金","水"],
+    name_meaning: "铭为铭记，泽为恩泽，寓意铭记恩德、泽被他人。",
+    poem_ref: "《礼记》「铭者，自名也」",
+    wuxing_score: 87, wuxing_analysis: "铭属金、泽属水，金生水旺，德才兼备。",
+    phonetic_score: 86, phonetic_analysis: "响亮有力，充满正能量。",
+    stroke_score: 83, total_stroke: 24, description: "现代感强，适合开朗阳光的孩子。" },
+  { rank: 33, full_name: "X思源", pinyin: "Sī Yuán", elements: ["火","水"],
+    name_meaning: "思为思虑深远，源为源头活水，寓意饮水思源、不忘根本。",
+    poem_ref: "《论语》「学而不思则罔」；朱熹「为有源头活水来」",
+    wuxing_score: 85, wuxing_analysis: "思属火、源属水，水火既济智慧通达。",
+    phonetic_score: 88, phonetic_analysis: "简洁有力，寓意深远。",
+    stroke_score: 82, total_stroke: 22, description: "经典而不过时，有家国情怀。" },
+  { rank: 34, full_name: "X敬尧", pinyin: "Jìng Yáo", elements: ["木","土"],
+    name_meaning: "敬为恭敬，尧为圣王，寓意心存敬意、志在圣贤。",
+    poem_ref: "《论语》「修己以敬」；《尚书》载尧舜之道",
+    wuxing_score: 86, wuxing_analysis: "敬含木金、尧属土，木土相安有圣贤气度。",
+    phonetic_score: 84, phonetic_analysis: "庄重典雅，有大器之风。",
+    stroke_score: 85, total_stroke: 27, description: "端正大气，有传承文化之意。" },
+  { rank: 35, full_name: "X乐言", pinyin: "Lè Yán", elements: ["火","金"],
+    name_meaning: "乐为快乐，言为言语，寓意乐观善言、悦人悦己。",
+    poem_ref: "《论语》「知之者不如好之者，好之者不如乐之者」",
+    wuxing_score: 82, wuxing_analysis: "乐属火、言含金，火金相济热情而有分寸。",
+    phonetic_score: 90, phonetic_analysis: "轻快明亮，如春风拂面。",
+    stroke_score: 78, total_stroke: 19, description: "快乐阳光，适合活泼开朗的孩子。" },
+  { rank: 36, full_name: "X鹤鸣", pinyin: "Hè Míng", elements: ["水","金"],
+    name_meaning: "鹤为仙禽，鸣为声名远播，寓意鹤鸣九皋、声闻于天。",
+    poem_ref: "《诗经》「鹤鸣于九皋，声闻于天」",
+    wuxing_score: 89, wuxing_analysis: "鹤含水金之灵，鸣含金声，双清共鸣格调高逸。",
+    phonetic_score: 87, phonetic_analysis: "鹤鸣九皋，声闻于天，音韵气场十足。",
+    stroke_score: 82, total_stroke: 23, description: "仙风道骨，适合气质不凡的孩子。" },
+  { rank: 37, full_name: "X谦益", pinyin: "Qiān Yì", elements: ["土","水"],
+    name_meaning: "谦为谦虚，益为增益，寓意谦受益、满招损。",
+    poem_ref: "《尚书》「满招损，谦受益」",
+    wuxing_score: 84, wuxing_analysis: "谦含土金、益属水，土厚水润谦和而有力。",
+    phonetic_score: 83, phonetic_analysis: "质朴有劲，如金石之声。",
+    stroke_score: 81, total_stroke: 26, description: "传统智慧，适合重视修养的家庭。" },
+  { rank: 38, full_name: "X峻熙", pinyin: "Jùn Xī", elements: ["土","火"],
+    name_meaning: "峻为高山，熙为光明，寓意气宇轩昂、光明磊落。",
+    poem_ref: "《诗经》「峻极于天」；《尔雅》「熙，光也」",
+    wuxing_score: 85, wuxing_analysis: "峻属土、熙含火，土厚火明高山仰止。",
+    phonetic_score: 86, phonetic_analysis: "高昂有力，有领袖气场。",
+    stroke_score: 83, total_stroke: 25, description: "大气磅礴，适合有远大志向的孩子。" },
+  { rank: 39, full_name: "X婉清", pinyin: "Wǎn Qīng", elements: ["水","水"],
+    name_meaning: "婉为温婉，清为清澈，寓意温婉如水、清澈如玉。",
+    poem_ref: "《诗经》「有美一人，清扬婉兮」",
+    wuxing_score: 90, wuxing_analysis: "双水并流，婉清皆水属，润泽灵秀至极。",
+    phonetic_score: 92, phonetic_analysis: "柔美清澈，如泉水流淌。",
+    stroke_score: 85, total_stroke: 22, description: "《诗经》原句入名，古典之美无以复加。" },
+  { rank: 40, full_name: "X明哲", pinyin: "Míng Zhé", elements: ["火","火"],
+    name_meaning: "明为明智，哲为哲思，寓意明辨是非、哲思深远。",
+    poem_ref: "《诗经》「既明且哲，以保其身」",
+    wuxing_score: 86, wuxing_analysis: "双火辉映，明哲皆火光之属，智慧光芒四射。",
+    phonetic_score: 84, phonetic_analysis: "平实中正，有大智慧的感觉。",
+    stroke_score: 82, total_stroke: 21, description: "《诗经》原文入名，智慧之选。" },
+  { rank: 41, full_name: "X云舒", pinyin: "Yún Shū", elements: ["水","金"],
+    name_meaning: "云为云端，舒为舒展，寓意云卷云舒、自在从容。",
+    poem_ref: "《菜根谭》「宠辱不惊，看庭前花开花落；去留无意，望天上云卷云舒」",
+    wuxing_score: 83, wuxing_analysis: "云属水、舒含金，金生水起云卷云舒。",
+    phonetic_score: 91, phonetic_analysis: "如云般舒展，念来便觉心境开阔。",
+    stroke_score: 79, total_stroke: 18, description: "意境名字，给人从容淡定的美感。" },
+  { rank: 42, full_name: "X嘉树", pinyin: "Jiā Shù", elements: ["木","木"],
+    name_meaning: "嘉为美好，树为栋梁，寓意嘉木可树、日后栋梁。",
+    poem_ref: "《楚辞》「后皇嘉树，橘徕服兮」",
+    wuxing_score: 87, wuxing_analysis: "双木成林，嘉含吉庆、树属栋梁，木秀于林。",
+    phonetic_score: 83, phonetic_analysis: "端正有力，有栋梁之气。",
+    stroke_score: 81, total_stroke: 25, description: "《楚辞》名篇命名，文化底蕴深厚。" },
+  { rank: 43, full_name: "X知行", pinyin: "Zhī Xíng", elements: ["火","水"],
+    name_meaning: "知为认知，行为实践，寓意知行合一、学以致用。",
+    poem_ref: "王阳明「知是行之始，行是知之成」",
+    wuxing_score: 84, wuxing_analysis: "知属火、行含水，心学精髓火水既济。",
+    phonetic_score: 87, phonetic_analysis: "简洁明快，寓意深远。",
+    stroke_score: 80, total_stroke: 17, description: "王阳明心学精髓，适合注重实践的家庭。" },
+  { rank: 44, full_name: "X若愚", pinyin: "Ruò Yú", elements: ["木","水"],
+    name_meaning: "若为如似，愚为大智若愚，寓意大巧若拙、大智若愚。",
+    poem_ref: "《道德经》「大智若愚，大巧若拙」",
+    wuxing_score: 82, wuxing_analysis: "若含木水、愚含水意，水润木秀内敛有德。",
+    phonetic_score: 85, phonetic_analysis: "反义见智，名字本身便是哲思。",
+    stroke_score: 78, total_stroke: 21, description: "道家智慧，适合崇尚内敛的家庭。" },
+  { rank: 45, full_name: "X延昭", pinyin: "Yán Zhāo", elements: ["土","火"],
+    name_meaning: "延为延续，昭为昭明，寓意光明延绵、德泽长久。",
+    poem_ref: "《尚书》「以昭受上帝，天其申命用休」",
+    wuxing_score: 83, wuxing_analysis: "延含土、昭属火，土厚火明绵延长久。",
+    phonetic_score: 82, phonetic_analysis: "稳重大气，有历史延绵之感。",
+    stroke_score: 80, total_stroke: 22, description: "光明持久，寓意福泽延绵子孙。" },
+];
+
+function scoreName(name: NameEntry, needed: string[], surname: string, gender: "male" | "female", nameLength: 2 | 3): number {
+  let score = 0;
+  // Element match: each matching element = +30
+  for (const el of name.elements) {
+    if (needed.includes(el)) score += 30;
+  }
+  // Phonetic bonus
+  score += name.phonetic_score / 10;
+  // Wuxing bonus
+  score += name.wuxing_score / 10;
+  // Gender adjustment (some names lean masculine/feminine)
+  const feminineNames = ["若溪","婉清","沅芷","槿言","云舒","书沅"];
+  const masculineNames = ["泽楷","承澜","景澄","峻熙","鹤鸣","牧遥","柏舟","修远","皓然","敬尧","翊辰"];
+  if (gender === "male" && masculineNames.some(n => name.full_name.includes(n))) score += 5;
+  if (gender === "female" && feminineNames.some(n => name.full_name.includes(n))) score += 5;
+  if (gender === "male" && feminineNames.some(n => name.full_name.includes(n))) score -= 5;
+  // Name length filter
+  const charCount = name.full_name.replace("X", "").length + 1; // +1 for surname
+  if (charCount !== nameLength) score -= 20;
+
+  return score;
+}
+
+export function getNamingResults(params: {
+  surname: string; gender: "male" | "female";
+  year: number; month: number; day: number; shichen: string;
+  nameLength: 2 | 3; styles: string[];
+}) {
+  const { surname, gender, month, day, shichen, nameLength } = params;
+  const bazi = deriveWuxingNeeded(month, day, shichen);
+
+  // Score and sort all names
+  const scored = NAME_POOL.map((n) => ({
+    ...n,
+    full_name: surname + n.full_name.slice(1),
+    score: scoreName(n, bazi.needed, surname, gender, nameLength),
+  }));
+
+  scored.sort((a, b) => b.score - a.score);
+
+  // Apply style filter if specified
+  let filtered = scored;
+  if (params.styles.length > 0) {
+    const styleMap: Record<string, string[]> = {
+      classical: ["沐宸","怀瑾","清珩","栖梧","瑾瑜","鹤鸣","沅芷","敬尧","若愚","砚书"],
+      modern: ["泽楷","铭泽","思源","乐言","知行","云舒","皓然","明哲","谦益","若溪"],
+      poetic: ["书沅","知弦","霁川","听澜","婉清","逸尘","牧遥","锦樾","嘉树","润禾"],
+      powerful: ["承澜","景澄","峻熙","修远","翊辰","柏舟","予安","延昭","彦舟","昀泽"],
+    };
+    const allowedNames = params.styles.flatMap((s) => styleMap[s] || []);
+    if (allowedNames.length > 0) {
+      filtered = scored.filter((n) => allowedNames.some((a) => n.full_name.includes(a)));
+      // If too few results, fall back to all names
+      if (filtered.length < 10) filtered = scored;
+    }
+  }
+
+  const top30 = filtered.slice(0, 30).map((n, i) => ({
+    ...n,
+    rank: i + 1,
+    wuxing_analysis: n.wuxing_analysis.replace("恰补命局", `恰补命局所缺之${bazi.needed.join("")}`),
+  }));
+
+  return {
+    code: 0,
+    data: {
+      surname,
+      bazi_summary: bazi.summary,
+      wuxing_needed: bazi.needed,
+      total_available: top30.length,
+      names: top30,
+    },
+  };
+}
 
 // ============ 今日黄历 ============
 export const MOCK_ALMANAC = {
@@ -757,6 +881,7 @@ export const MOCK_ALMANAC = {
     source: "《协纪辨方书》《玉匣记》",
   },
 };
+
 
 // ============ 禅修 ============
 export const MEDITATION_TRACKS = [
