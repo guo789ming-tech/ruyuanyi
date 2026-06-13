@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/lib/UserContext";
+import { useAdmin } from "@/lib/AdminContext";
 import { supabase } from "@/lib/supabase";
 
 const STORAGE_PREFIX = "ruyuanyi_paid_";
@@ -11,8 +12,18 @@ export function usePaymentWall(serviceName: string, price: string) {
   const [isPending, setIsPending] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const { isLoggedIn, setShowAuthModal, user } = useUser();
+  const { isAdmin } = useAdmin();
+
+  // Admin bypass: all paid content is free
+  useEffect(() => {
+    if (isAdmin) {
+      setIsPaid(true);
+      setIsPending(false);
+    }
+  }, [isAdmin]);
 
   const checkOrder = useCallback(async () => {
+    if (isAdmin) return;
     const phone = user?.phone;
     if (!phone) return;
 
@@ -72,9 +83,14 @@ export function usePaymentWall(serviceName: string, price: string) {
       setShowAuthModal(true);
       return null;
     }
+    if (isAdmin) {
+      setIsPaid(true);
+      setIsPending(false);
+      return null;
+    }
     setShowPayment(true);
     return null;
-  }, [isLoggedIn, setShowAuthModal]);
+  }, [isLoggedIn, isAdmin, setShowAuthModal]);
 
   return {
     isPaid,
