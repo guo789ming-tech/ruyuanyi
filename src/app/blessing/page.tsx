@@ -84,28 +84,6 @@ function timeAgo(iso: string): string {
   return `${Math.floor(months / 12)}年前`;
 }
 
-// ---- Flame Animation Keyframes (injected via style tag) ----
-function FlameStyles() {
-  return (
-    <style jsx global>{`
-      @keyframes flicker {
-        0%, 100% { transform: scaleY(1) scaleX(1) translateY(0); opacity: 0.9; }
-        25% { transform: scaleY(1.08) scaleX(0.92) translateY(-1px); opacity: 1; }
-        50% { transform: scaleY(0.94) scaleX(1.06) translateY(0.5px); opacity: 0.85; }
-        75% { transform: scaleY(1.05) scaleX(0.95) translateY(-0.5px); opacity: 0.95; }
-      }
-      @keyframes glow-pulse {
-        0%, 100% { opacity: 0.5; transform: scale(1); }
-        50% { opacity: 0.8; transform: scale(1.15); }
-      }
-      @keyframes flame-rise {
-        0% { transform: translateY(0) scale(1); opacity: 0.4; }
-        100% { transform: translateY(-16px) scale(0.3); opacity: 0; }
-      }
-    `}</style>
-  );
-}
-
 // ---- CSS Oil Lamp Flame ----
 function LampFlame({ colorClass, size = "lg" }: { colorClass: string; size?: "sm" | "lg" }) {
   const dims = size === "sm" ? "size-6" : "size-8";
@@ -115,14 +93,14 @@ function LampFlame({ colorClass, size = "lg" }: { colorClass: string; size?: "sm
       {/* Outer glow */}
       <div
         className={cn("absolute left-1/2 top-0 -translate-x-1/2 rounded-full blur-md bg-gradient-to-b", colorClass, dims)}
-        style={{ animation: "glow-pulse 2s ease-in-out infinite" }}
+        style={{ animation: "flame-glow-pulse 2s ease-in-out infinite" }}
       />
       {/* Flame body - teardrop shape */}
       <div className="absolute left-1/2 top-0 -translate-x-1/2">
         <div
           className={cn("mx-auto rounded-full bg-gradient-to-t", colorClass, innerDims)}
           style={{
-            animation: "flicker 1.5s ease-in-out infinite",
+            animation: "flame-flicker 1.5s ease-in-out infinite",
             clipPath: "polygon(50% 0%, 0% 100%, 50% 85%, 100% 100%)",
             transformOrigin: "bottom center",
           }}
@@ -131,7 +109,7 @@ function LampFlame({ colorClass, size = "lg" }: { colorClass: string; size?: "sm
       {/* Floating sparkles */}
       <div
         className={cn("absolute left-1/2 top-0 -translate-x-1/2 rounded-full bg-amber-300/60", size === "sm" ? "size-0.5" : "size-1")}
-        style={{ animation: "flame-rise 1.8s ease-out infinite" }}
+        style={{ animation: "flame-spark-rise 1.8s ease-out infinite" }}
       />
     </div>
   );
@@ -346,7 +324,6 @@ export default function BlessingPage() {
 
   return (
     <main className="flex-1">
-      <FlameStyles />
       <div className="mx-auto max-w-2xl px-4 pb-16 pt-6">
         <ScrollReveal>
           <div className="flex items-center gap-3">
