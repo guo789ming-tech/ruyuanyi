@@ -17,6 +17,21 @@ import { delay, cn } from "@/lib/utils";
 
 type TabKey = "chart" | "personality" | "career" | "wealth" | "relationship" | "health";
 
+const SHICHEN = [
+  { value: "子时", range: "23:00-00:59", hour: 0 },
+  { value: "丑时", range: "01:00-02:59", hour: 2 },
+  { value: "寅时", range: "03:00-04:59", hour: 4 },
+  { value: "卯时", range: "05:00-06:59", hour: 6 },
+  { value: "辰时", range: "07:00-08:59", hour: 8 },
+  { value: "巳时", range: "09:00-10:59", hour: 10 },
+  { value: "午时", range: "11:00-12:59", hour: 12 },
+  { value: "未时", range: "13:00-14:59", hour: 14 },
+  { value: "申时", range: "15:00-16:59", hour: 16 },
+  { value: "酉时", range: "17:00-18:59", hour: 18 },
+  { value: "戌时", range: "19:00-20:59", hour: 20 },
+  { value: "亥时", range: "21:00-22:59", hour: 22 },
+];
+
 const ANALYSIS_TABS: { key: TabKey; label: string; icon: string }[] = [
   { key: "chart", label: "命盘", icon: "☯️" },
   { key: "personality", label: "性格", icon: "🧠" },
@@ -26,11 +41,25 @@ const ANALYSIS_TABS: { key: TabKey; label: string; icon: string }[] = [
   { key: "health", label: "健康", icon: "🫀" },
 ];
 
+const currentYear = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => currentYear - i);
+const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+function getDaysInMonth(year: number, month: number) {
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const days = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return days[month - 1];
+}
+
 export default function BaziPage() {
   const [step, setStep] = useState<"form" | "loading" | "result">("form");
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("1990-05-15");
-  const [birthTime, setBirthTime] = useState("14:00");
+  const [calendarType, setCalendarType] = useState<"solar" | "lunar">("solar");
+  const [lunarYear, setLunarYear] = useState(1990);
+  const [lunarMonth, setLunarMonth] = useState(5);
+  const [lunarDay, setLunarDay] = useState(15);
+  const [birthShichen, setBirthShichen] = useState("午时");
   const [gender, setGender] = useState("male");
   const [master, setMaster] = useState("huiming");
   const [error, setError] = useState("");
@@ -39,10 +68,17 @@ export default function BaziPage() {
   const { addOrder, pricing } = useAdmin();
   const payment = usePaymentWall("bazi", pricing.bazi);
 
+  const lunarDaysInMonth = calendarType === "lunar" ? 30 : 31;
+
   const handleSubmit = async () => {
     if (!name.trim()) { setError("请输入姓名"); return; }
-    if (!birthDate) { setError("请选择出生日期"); return; }
+    if (calendarType === "solar" && !birthDate) { setError("请选择出生日期"); return; }
     setError("");
+
+    const finalBirthDate =
+      calendarType === "solar"
+        ? birthDate
+        : `${lunarYear}-${String(lunarMonth).padStart(2, "0")}-${String(lunarDay).padStart(2, "0")}`;
     payment.setIsPaid();
     setStep("loading");
     await delay(2000);
@@ -94,12 +130,74 @@ export default function BaziPage() {
                   <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError(""); }} placeholder="请输入姓名" className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper placeholder:text-paper-dark/30 focus:border-gold/50 focus:outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm text-paper-dark mb-1">出生日期</label>
-                  <input type="date" value={birthDate} onChange={(e) => { setBirthDate(e.target.value); setError(""); }} className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none" />
+                  <label className="block text-sm text-paper-dark mb-2">出生日期</label>
+                  <div className="flex gap-2 mb-2">
+                    {[
+                      { key: "solar", label: "阳历（公历）" },
+                      { key: "lunar", label: "阴历（农历）" },
+                    ].map((c) => (
+                      <button
+                        key={c.key}
+                        type="button"
+                        onClick={() => setCalendarType(c.key as "solar" | "lunar")}
+                        className={`flex-1 rounded-lg border py-2 text-xs transition-colors ${calendarType === c.key ? "border-gold bg-gold/10 text-gold" : "border-gold/20 text-paper-dark/60 hover:border-gold/40"}`}
+                      >
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
+                  {calendarType === "solar" ? (
+                    <input
+                      type="date"
+                      value={birthDate}
+                      onChange={(e) => { setBirthDate(e.target.value); setError(""); }}
+                      className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none"
+                    />
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      <select
+                        value={lunarYear}
+                        onChange={(e) => { setLunarYear(Number(e.target.value)); setError(""); }}
+                        className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-3 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {YEAR_OPTIONS.map((y) => (
+                          <option key={y} value={y}>{y}年</option>
+                        ))}
+                      </select>
+                      <select
+                        value={lunarMonth}
+                        onChange={(e) => { setLunarMonth(Number(e.target.value)); setError(""); }}
+                        className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-3 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {MONTH_OPTIONS.map((m) => (
+                          <option key={m} value={m}>{m}月</option>
+                        ))}
+                      </select>
+                      <select
+                        value={lunarDay}
+                        onChange={(e) => { setLunarDay(Number(e.target.value)); setError(""); }}
+                        className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-3 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {Array.from({ length: lunarDaysInMonth }, (_, i) => i + 1).map((d) => (
+                          <option key={d} value={d}>{d}日</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm text-paper-dark mb-1">出生时辰</label>
-                  <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)} className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none" />
+                  <label className="block text-sm text-paper-dark mb-2">出生时辰（十二时辰）</label>
+                  <select
+                    value={birthShichen}
+                    onChange={(e) => setBirthShichen(e.target.value)}
+                    className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper focus:border-gold/50 focus:outline-none appearance-none cursor-pointer"
+                  >
+                    {SHICHEN.map((sc) => (
+                      <option key={sc.value} value={sc.value}>
+                        {sc.value}（{sc.range}）
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm text-paper-dark mb-1">性别</label>

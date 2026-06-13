@@ -11,6 +11,9 @@ import { BodhiLeaf } from "@/components/BodhiLogo";
 function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isAdmin = pathname?.startsWith("/admin");
+
+  if (isAdmin) return null;
 
   return (
     <header
@@ -36,6 +39,25 @@ function Header() {
   );
 }
 
+function AdminAwareLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
+
+  return (
+    <>
+      <Header />
+      {isAdmin ? (
+        children
+      ) : (
+        <main className="relative z-10 mx-auto min-h-[calc(100vh-3.5rem)] w-full pt-14 pb-24 md:pb-8">
+          {children}
+        </main>
+      )}
+      {!isAdmin && <BottomNav />}
+    </>
+  );
+}
+
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <UserProvider>
@@ -51,14 +73,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       />
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-gold/10 to-transparent" />
 
-      <Header />
-
-      {/* Main content */}
-      <main className="relative z-10 mx-auto min-h-[calc(100vh-3.5rem)] w-full pt-14 pb-24 md:pb-8">
-        {children}
-      </main>
-
-      <BottomNav />
+      <AdminAwareLayout>{children}</AdminAwareLayout>
       <AuthModal />
       </AdminProvider>
     </UserProvider>
