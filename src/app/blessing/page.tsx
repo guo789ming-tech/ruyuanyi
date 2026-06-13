@@ -214,7 +214,12 @@ export default function BlessingPage() {
       };
     });
 
-    setLampWall(entries);
+    // Preserve user's own local entries not yet in Supabase
+    setLampWall((prev) => {
+      const supabaseIds = new Set(entries.map((e) => e.id));
+      const localMine = prev.filter((e) => e.isMine && !supabaseIds.has(e.id));
+      return [...localMine, ...entries];
+    });
     setWallLoading(false);
   }, [user?.phone]);
 
@@ -236,7 +241,7 @@ export default function BlessingPage() {
     setShowPayment(true);
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     const relationLabel = RELATIONS.find((r) => r.id === relation)?.label || "家人";
     const durationLabel = selectedDuration.label;
 
@@ -254,7 +259,7 @@ export default function BlessingPage() {
     const detailParts = [`为${relationLabel}${name}祈福`, durationLabel];
     if (wish.trim()) detailParts.push(wish.trim());
 
-    addOrder({
+    await addOrder({
       userPhone: user?.phone || "",
       userName: user?.name || "",
       service: "blessing",
