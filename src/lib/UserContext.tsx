@@ -155,13 +155,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount, then sync from Supabase
   useEffect(() => {
-    setUser(loadFromStorage<User | null>(STORAGE_USER, null));
-    setFortuneHistory(loadFromStorage<FortuneRecord[]>(STORAGE_FORTUNE, []));
-    setIncenseHistory(loadFromStorage<IncenseRecord[]>(STORAGE_INCENSE, []));
-    setBlessingHistory(loadFromStorage<BlessingRecord[]>(STORAGE_BLESSING, []));
-    setDreamHistory(loadFromStorage<DreamRecord[]>(STORAGE_DREAM, []));
+    const savedUser = loadFromStorage<User | null>(STORAGE_USER, null);
+    setUser(savedUser);
+    if (savedUser) {
+      const p = savedUser.phone;
+      setFortuneHistory(loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, p), []));
+      setIncenseHistory(loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, p), []));
+      setBlessingHistory(loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, p), []));
+      setDreamHistory(loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, p), []));
+      void syncRecordsFromSupabase(p);
+    } else {
+      setFortuneHistory(loadFromStorage<FortuneRecord[]>(STORAGE_FORTUNE, []));
+      setIncenseHistory(loadFromStorage<IncenseRecord[]>(STORAGE_INCENSE, []));
+      setBlessingHistory(loadFromStorage<BlessingRecord[]>(STORAGE_BLESSING, []));
+      setDreamHistory(loadFromStorage<DreamRecord[]>(STORAGE_DREAM, []));
+    }
   }, []);
 
   const login = useCallback((phone: string, name: string) => {
