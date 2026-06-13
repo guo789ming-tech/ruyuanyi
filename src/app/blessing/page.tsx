@@ -23,18 +23,26 @@ const RELATIONS = [
   { id: "self", label: "自己" },
 ];
 
-// ---- Duration badge style map ----
-const DURATION_STYLE: Record<string, string> = {
+// ---- Duration visual config ----
+const DURATION_META: Record<string, { icon: string; subtitle: string; flameColor: string; glowColor: string; ringColor: string }> = {
+  "month":    { icon: "🕯️", subtitle: "随喜灯", flameColor: "from-amber-400 to-orange-500",   glowColor: "bg-amber-500/15",    ringColor: "ring-amber-500/20" },
+  "100days":  { icon: "🏮", subtitle: "祈福灯", flameColor: "from-orange-400 to-red-500",      glowColor: "bg-orange-500/15",   ringColor: "ring-orange-500/20" },
+  "year":     { icon: "🪔", subtitle: "长明灯", flameColor: "from-yellow-300 to-amber-500",    glowColor: "bg-gold/20",         ringColor: "ring-gold/30" },
+  "forever":  { icon: "🪷", subtitle: "永驻灯", flameColor: "from-rose-300 via-amber-400 to-rose-400", glowColor: "bg-rose-400/15", ringColor: "ring-rose-400/20" },
+};
+
+const DURATION_BADGE: Record<string, string> = {
   "一月": "border-amber-500/30 bg-amber-500/10 text-amber-400",
-  "百日": "border-slate-400/30 bg-slate-400/10 text-slate-300",
+  "百日": "border-orange-400/30 bg-orange-400/10 text-orange-300",
   "一年": "border-gold/40 bg-gold/10 text-gold",
   "永久": "border-rose-400/30 bg-rose-400/10 text-rose-300",
 };
 
+// ---- Types ----
 interface LampEntry {
   id: string;
-  subject: string;    // "为母亲张三祈福"
-  duration: string;   // "一月" | "百日" | "一年" | "永久"
+  subject: string;
+  duration: string;
   wish: string;
   userName: string;
   timestamp: string;
@@ -42,14 +50,10 @@ interface LampEntry {
   isMine: boolean;
 }
 
+// ---- Helpers ----
 function parseDetail(detail: string): { subject: string; duration: string; wish: string } {
-  // Format: "为母亲张三祈福 · 一月" or "为母亲张三祈福 · 一月 · 心愿文字"
   const parts = detail.split(" · ");
-  return {
-    subject: parts[0] || "",
-    duration: parts[1] || "",
-    wish: parts[2] || "",
-  };
+  return { subject: parts[0] || "", duration: parts[1] || "", wish: parts[2] || "" };
 }
 
 function desensitizeName(name: string): string {
@@ -61,7 +65,6 @@ function desensitizeName(name: string): string {
 }
 
 function maskSubject(subject: string): string {
-  // "为母亲张三祈福" → "为母亲张*祈福"
   return subject.replace(/^为(.{2})(.+?)祈福$/, (_, relation, name) => {
     return `为${relation}${desensitizeName(name)}祈福`;
   });
@@ -81,9 +84,68 @@ function timeAgo(iso: string): string {
   return `${Math.floor(months / 12)}年前`;
 }
 
-// ---- Lamp card with flame animation ----
+// ---- Flame Animation Keyframes (injected via style tag) ----
+function FlameStyles() {
+  return (
+    <style jsx global>{`
+      @keyframes flicker {
+        0%, 100% { transform: scaleY(1) scaleX(1) translateY(0); opacity: 0.9; }
+        25% { transform: scaleY(1.08) scaleX(0.92) translateY(-1px); opacity: 1; }
+        50% { transform: scaleY(0.94) scaleX(1.06) translateY(0.5px); opacity: 0.85; }
+        75% { transform: scaleY(1.05) scaleX(0.95) translateY(-0.5px); opacity: 0.95; }
+      }
+      @keyframes glow-pulse {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.15); }
+      }
+      @keyframes flame-rise {
+        0% { transform: translateY(0) scale(1); opacity: 0.4; }
+        100% { transform: translateY(-16px) scale(0.3); opacity: 0; }
+      }
+    `}</style>
+  );
+}
+
+// ---- CSS Oil Lamp Flame ----
+function LampFlame({ colorClass, size = "lg" }: { colorClass: string; size?: "sm" | "lg" }) {
+  const dims = size === "sm" ? "size-6" : "size-8";
+  const innerDims = size === "sm" ? "size-3" : "size-4";
+  return (
+    <div className={cn("relative mx-auto", size === "sm" ? "h-7" : "h-10")}>
+      {/* Outer glow */}
+      <div
+        className={cn("absolute left-1/2 top-0 -translate-x-1/2 rounded-full blur-md bg-gradient-to-b", colorClass, dims)}
+        style={{ animation: "glow-pulse 2s ease-in-out infinite" }}
+      />
+      {/* Flame body - teardrop shape */}
+      <div className="absolute left-1/2 top-0 -translate-x-1/2">
+        <div
+          className={cn("mx-auto rounded-full bg-gradient-to-t", colorClass, innerDims)}
+          style={{
+            animation: "flicker 1.5s ease-in-out infinite",
+            clipPath: "polygon(50% 0%, 0% 100%, 50% 85%, 100% 100%)",
+            transformOrigin: "bottom center",
+          }}
+        />
+      </div>
+      {/* Floating sparkles */}
+      <div
+        className={cn("absolute left-1/2 top-0 -translate-x-1/2 rounded-full bg-amber-300/60", size === "sm" ? "size-0.5" : "size-1")}
+        style={{ animation: "flame-rise 1.8s ease-out infinite" }}
+      />
+    </div>
+  );
+}
+
+// ---- Lamp Wall Card ----
 function LampCard({ entry }: { entry: LampEntry }) {
-  const durStyle = DURATION_STYLE[entry.duration] || DURATION_STYLE["一月"];
+  const durId = Object.entries(DURATION_META).find(
+    ([, v]) => v.subtitle === ({ month: "随喜灯", "100days": "祈福灯", year: "长明灯", forever: "永驻灯" }[
+      entry.duration === "一月" ? "month" : entry.duration === "百日" ? "100days" : entry.duration === "一年" ? "year" : "forever"
+    ])
+  )?.[0] || "month";
+  const meta = DURATION_META[durId] || DURATION_META["month"];
+  const badgeStyle = DURATION_BADGE[entry.duration] || DURATION_BADGE["一月"];
 
   return (
     <motion.div
@@ -91,69 +153,68 @@ function LampCard({ entry }: { entry: LampEntry }) {
       animate={{ opacity: 1, scale: 1 }}
       layout
       className={cn(
-        "relative rounded-2xl border p-4",
+        "relative rounded-2xl border p-3.5 flex flex-col items-center",
         entry.isMine
-          ? "border-gold/40 bg-gradient-to-b from-gold/15 to-xuan-card/90 ring-1 ring-gold/20"
+          ? "border-gold/50 bg-gradient-to-b from-gold/15 to-xuan-card/90 ring-1 ring-gold/30"
           : entry.status === "pending"
           ? "border-gold/10 bg-xuan-surface/50"
           : "border-gold/15 bg-xuan-surface/60"
       )}
     >
-      {/* Glow behind lamp */}
-      <div className="absolute inset-x-0 top-2 flex justify-center pointer-events-none">
-        <div
-          className={cn(
-            "size-12 rounded-full blur-xl",
-            entry.status === "paid" ? "bg-orange-500/20" : "bg-orange-500/8"
-          )}
-        />
+      {/* Background halo */}
+      <div className="absolute inset-x-0 top-0 flex justify-center pointer-events-none">
+        <div className={cn("size-14 rounded-full blur-xl", meta.glowColor, entry.status === "paid" ? "opacity-100" : "opacity-50")} />
       </div>
 
-      {/* Lamp icon with flame animation */}
-      <div className="relative flex justify-center mb-2">
-        <span className="text-4xl relative">
-          🪔
-          {/* Flame flicker overlay */}
-          <span
-            className="absolute inset-0 text-4xl animate-pulse"
-            style={{ animationDuration: "1.5s", mixBlendMode: "screen" }}
-          >
-            ✨
+      {/* Flame + Lamp */}
+      <div className="relative mt-1">
+        <LampFlame colorClass={meta.flameColor} size="sm" />
+        {/* Lamp body */}
+        <div className="relative -mt-1 flex justify-center">
+          <span className="text-3xl drop-shadow-[0_0_6px_rgba(212,168,83,0.4)]">
+            {meta.icon}
           </span>
-        </span>
+        </div>
       </div>
 
-      {/* Subject */}
-      <p className="text-center text-sm text-gold font-medium leading-tight mt-1">
-        {entry.isMine ? entry.subject : maskSubject(entry.subject)}
-      </p>
+      {/* Subject — red ribbon plaque style */}
+      <div className="mt-2 w-full rounded-md bg-gradient-to-r from-red-900/30 via-red-800/40 to-red-900/30 border border-red-800/30 px-2 py-1.5">
+        <p className="text-center text-xs text-gold font-medium leading-tight">
+          {entry.isMine ? entry.subject : maskSubject(entry.subject)}
+        </p>
+      </div>
 
       {/* Wish */}
       {entry.wish && (
-        <p className="text-center text-xs text-paper-dark/50 italic mt-1 line-clamp-2">
+        <p className="text-center text-[11px] text-paper-dark/45 italic mt-1.5 line-clamp-2 leading-tight">
           「{entry.wish}」
         </p>
       )}
 
-      {/* Duration badge + time */}
-      <div className="flex items-center justify-center gap-2 mt-3">
-        <span className={cn("rounded-full border px-2.5 py-0.5 text-xs font-medium", durStyle)}>
+      {/* Duration badge */}
+      <div className="flex items-center justify-center gap-1.5 mt-2">
+        <span className={cn("rounded-full border px-2 py-0.5 text-[11px] font-medium", badgeStyle)}>
           {entry.duration}
         </span>
         {entry.status === "pending" && (
-          <span className="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-xs text-yellow-400">
+          <span className="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-1.5 py-0.5 text-[11px] text-yellow-400">
             审核中
           </span>
         )}
       </div>
 
       {/* Time + user */}
-      <div className="flex items-center justify-center gap-2 mt-2 text-xs text-paper-dark/40">
-        <Clock className="size-3" />
+      <div className="flex items-center justify-center gap-1.5 mt-1.5 text-[11px] text-paper-dark/40">
+        <Clock className="size-2.5" />
         <span>{timeAgo(entry.timestamp)}</span>
         <span>·</span>
         <span>{entry.isMine ? entry.userName : desensitizeName(entry.userName)}</span>
       </div>
+
+      {/* Corner sparkle for paid lamps */}
+      {entry.status === "paid" && (
+        <Sparkles className="absolute top-2 right-2 size-3 text-gold/40" />
+      )}
     </motion.div>
   );
 }
@@ -170,20 +231,19 @@ export default function BlessingPage() {
   const { isLoggedIn, setShowAuthModal, addBlessingRecord, user } = useUser();
   const { addOrder, pricing } = useAdmin();
 
-  // Real lamp wall data from Supabase
   const [lampWall, setLampWall] = useState<LampEntry[]>([]);
   const [wallLoading, setWallLoading] = useState(true);
 
   const durations = [
-    { id: "month", label: "一月", days: 30, price: pricing.blessing_month },
-    { id: "100days", label: "百日", days: 100, price: pricing.blessing_100days },
-    { id: "year", label: "一年", days: 365, price: pricing.blessing_year },
-    { id: "forever", label: "永久", days: -1, price: pricing.blessing_forever },
+    { id: "month", label: "一月", price: pricing.blessing_month },
+    { id: "100days", label: "百日", price: pricing.blessing_100days },
+    { id: "year", label: "一年", price: pricing.blessing_year },
+    { id: "forever", label: "永久", price: pricing.blessing_forever },
   ];
 
   const selectedDuration = durations.find((d) => d.id === duration)!;
+  const selectedMeta = DURATION_META[duration] || DURATION_META["month"];
 
-  // Fetch lamp wall from Supabase
   const fetchLampWall = useCallback(async () => {
     const phone = user?.phone || "";
     const { data, error: supabaseError } = await supabase
@@ -194,10 +254,7 @@ export default function BlessingPage() {
       .order("timestamp", { ascending: false })
       .limit(50);
 
-    if (supabaseError || !data) {
-      setWallLoading(false);
-      return;
-    }
+    if (supabaseError || !data) { setWallLoading(false); return; }
 
     const entries: LampEntry[] = data.map((o: Record<string, unknown>) => {
       const detail = (o.detail as string) || "";
@@ -214,7 +271,6 @@ export default function BlessingPage() {
       };
     });
 
-    // Preserve user's own local entries not yet in Supabase
     setLampWall((prev) => {
       const supabaseIds = new Set(entries.map((e) => e.id));
       const localMine = prev.filter((e) => e.isMine && !supabaseIds.has(e.id));
@@ -223,11 +279,7 @@ export default function BlessingPage() {
     setWallLoading(false);
   }, [user?.phone]);
 
-  useEffect(() => {
-    fetchLampWall();
-  }, [fetchLampWall]);
-
-  // Poll for status changes
+  useEffect(() => { fetchLampWall(); }, [fetchLampWall]);
   useEffect(() => {
     const interval = setInterval(() => fetchLampWall(), 15000);
     return () => clearInterval(interval);
@@ -269,7 +321,6 @@ export default function BlessingPage() {
       detail: detailParts.join(" · "),
     });
 
-    // Add user's lamp to wall immediately
     const newEntry: LampEntry = {
       id: `bless_${Date.now()}`,
       subject: `为${relationLabel}${name}祈福`,
@@ -290,16 +341,12 @@ export default function BlessingPage() {
   };
 
   const handleReset = () => {
-    setName("");
-    setRelation("");
-    setWish("");
-    setYourName("");
-    setDuration("month");
-    setView("form");
+    setName(""); setRelation(""); setWish(""); setYourName(""); setDuration("month"); setView("form");
   };
 
   return (
     <main className="flex-1">
+      <FlameStyles />
       <div className="mx-auto max-w-2xl px-4 pb-16 pt-6">
         <ScrollReveal>
           <div className="flex items-center gap-3">
@@ -326,8 +373,7 @@ export default function BlessingPage() {
                 <div>
                   <label className="block text-xs text-paper-dark/60 mb-1">为谁祈福</label>
                   <input
-                    type="text"
-                    value={name}
+                    type="text" value={name}
                     onChange={(e) => { setName(e.target.value); setError(""); }}
                     placeholder="家人姓名"
                     className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper placeholder:text-paper-dark/30 focus:border-gold/50 focus:outline-none"
@@ -340,67 +386,77 @@ export default function BlessingPage() {
                   <div className="flex flex-wrap gap-2">
                     {RELATIONS.map((r) => (
                       <button
-                        key={r.id}
-                        onClick={() => setRelation(r.id)}
+                        key={r.id} onClick={() => setRelation(r.id)}
                         className={cn(
                           "rounded-lg border px-4 py-2 text-sm transition-colors",
-                          relation === r.id
-                            ? "border-gold bg-gold/10 text-gold"
-                            : "border-gold/20 text-paper-dark hover:border-gold/40"
+                          relation === r.id ? "border-gold bg-gold/10 text-gold" : "border-gold/20 text-paper-dark hover:border-gold/40"
                         )}
-                      >
-                        {r.label}
-                      </button>
+                      >{r.label}</button>
                     ))}
                   </div>
                 </div>
 
-                {/* Duration */}
+                {/* Duration — Buddhist lamp-card style */}
                 <div>
-                  <label className="block text-xs text-paper-dark/60 mb-1">供奉时长</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {durations.map((d) => (
-                      <button
-                        key={d.id}
-                        onClick={() => setDuration(d.id)}
-                        className={cn(
-                          "rounded-xl border py-3 text-center transition-colors",
-                          duration === d.id
-                            ? "border-gold bg-gold/10"
-                            : "border-gold/20 hover:border-gold/40"
-                        )}
-                      >
-                        <p className="text-sm font-medium text-gold">{d.label}</p>
-                        <p className="text-xs text-paper-dark/60 mt-0.5">{d.price}</p>
-                      </button>
-                    ))}
+                  <label className="block text-xs text-paper-dark/60 mb-2">供奉时长</label>
+                  <div className="grid grid-cols-4 gap-2.5">
+                    {durations.map((d) => {
+                      const meta = DURATION_META[d.id] || DURATION_META["month"];
+                      const sel = duration === d.id;
+                      return (
+                        <button
+                          key={d.id}
+                          onClick={() => setDuration(d.id)}
+                          className={cn(
+                            "relative rounded-2xl border py-3.5 px-1 text-center transition-all duration-300 flex flex-col items-center gap-1.5",
+                            sel
+                              ? "border-gold bg-gradient-to-b from-gold/15 to-gold/5 shadow-[0_0_20px_rgba(212,168,83,0.15)] scale-[1.03]"
+                              : "border-gold/15 bg-xuan/60 hover:border-gold/30 hover:bg-xuan/80"
+                          )}
+                        >
+                          {/* Mini lamp icon */}
+                          <div className="relative">
+                            <span className={cn("text-xl transition-transform", sel && "scale-110")}>
+                              {meta.icon}
+                            </span>
+                            {sel && (
+                              <div className={cn("absolute inset-0 rounded-full blur-sm", meta.glowColor)} />
+                            )}
+                          </div>
+                          {/* Duration name */}
+                          <p className={cn("text-sm font-display tracking-wider", sel ? "text-gold" : "text-paper-dark/70")}>
+                            {d.label}
+                          </p>
+                          {/* Buddhist subtitle */}
+                          <p className={cn("text-[10px] tracking-widest", sel ? "text-gold/70" : "text-paper-dark/40")}>
+                            {meta.subtitle}
+                          </p>
+                          {/* Price */}
+                          <p className={cn("text-xs font-medium mt-0.5", sel ? "text-gold" : "text-paper-dark/50")}>
+                            {d.price}
+                          </p>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Wish */}
                 <div>
-                  <label className="block text-xs text-paper-dark/60 mb-1">
-                    心愿（可选，最多 80 字）
-                  </label>
+                  <label className="block text-xs text-paper-dark/60 mb-1">心愿（可选，最多 80 字）</label>
                   <textarea
-                    value={wish}
-                    onChange={(e) => setWish(e.target.value)}
+                    value={wish} onChange={(e) => setWish(e.target.value)}
                     placeholder="写下你的祈福心愿..."
-                    maxLength={80}
+                    maxLength={80} rows={2}
                     className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper placeholder:text-paper-dark/30 focus:border-gold/50 focus:outline-none resize-none"
-                    rows={2}
                   />
                 </div>
 
                 {/* Your name */}
                 <div>
-                  <label className="block text-xs text-paper-dark/60 mb-1">
-                    您的称呼（可选，会显示在灯墙）
-                  </label>
+                  <label className="block text-xs text-paper-dark/60 mb-1">您的称呼（可选，会显示在灯墙）</label>
                   <input
-                    type="text"
-                    value={yourName}
-                    onChange={(e) => setYourName(e.target.value)}
+                    type="text" value={yourName} onChange={(e) => setYourName(e.target.value)}
                     placeholder="您的称呼"
                     className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-paper placeholder:text-paper-dark/30 focus:border-gold/50 focus:outline-none"
                   />
@@ -418,18 +474,14 @@ export default function BlessingPage() {
 
         {view === "lighting" && (
           <div className="mt-12 flex flex-col items-center gap-4">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring" }}
-              className="text-6xl"
-            >
-              🪔
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring" }}>
+              <LampFlame colorClass={selectedMeta.flameColor} size="lg" />
             </motion.div>
+            <div className="text-5xl drop-shadow-[0_0_12px_rgba(212,168,83,0.5)]">{selectedMeta.icon}</div>
             <motion.div
-              animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0.8, 0.5] }}
+              animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.7, 0.4] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="size-20 rounded-full bg-orange-500/20 blur-xl"
+              className={cn("size-20 rounded-full blur-xl", selectedMeta.glowColor)}
             />
             <p className="text-sm text-gold/70 animate-pulse">正在点亮祈福灯...</p>
             <p className="text-xs text-paper-dark/50">
@@ -439,44 +491,31 @@ export default function BlessingPage() {
         )}
 
         {view === "lit" && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 space-y-5"
-          >
-            {/* Lit confirmation */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">
             <div className="rounded-2xl border border-gold/30 bg-gradient-to-b from-gold/5 to-xuan-card p-6 text-center">
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
-                className="text-6xl"
+              <motion.div
+                initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}
+                className="flex justify-center"
               >
-                🪔
-              </motion.span>
+                <LampFlame colorClass={selectedMeta.flameColor} size="lg" />
+              </motion.div>
+              <div className="text-5xl drop-shadow-[0_0_16px_rgba(212,168,83,0.6)]">{selectedMeta.icon}</div>
               <h2 className="mt-3 font-display text-2xl text-gold">如愿灯已点亮</h2>
               <p className="mt-1 text-sm text-paper-dark/70">
                 愿{RELATIONS.find((r) => r.id === relation)?.label} {name} 福寿安康
               </p>
-              {wish && (
-                <p className="mt-1 text-xs text-paper-dark/60 italic">「{wish}」</p>
-              )}
+              {wish && <p className="mt-1 text-xs text-paper-dark/60 italic">「{wish}」</p>}
               <div className="mt-3 inline-flex items-center gap-2">
-                <span className={cn("rounded-full border px-3 py-1 text-xs font-medium", DURATION_STYLE[selectedDuration.label])}>
-                  {selectedDuration.label}
+                <span className={cn("rounded-full border px-3 py-1 text-xs font-medium", DURATION_BADGE[selectedDuration.label])}>
+                  {selectedDuration.label} · {selectedMeta.subtitle}
                 </span>
                 <span className="text-xs text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-3 py-1">
                   待审核 · 审核后点亮灯墙
                 </span>
               </div>
-              <p className="mt-2 text-xs text-paper-dark/40">
-                您的祈福灯已提交，师父审核通过后将展示在供灯墙上
-              </p>
-
+              <p className="mt-2 text-xs text-paper-dark/40">您的祈福灯已提交，师父审核通过后将展示在供灯墙上</p>
               <div className="mt-5 flex gap-3">
-                <Button variant="secondary" className="flex-1" onClick={handleReset}>
-                  再点一盏
-                </Button>
+                <Button variant="secondary" className="flex-1" onClick={handleReset}>再点一盏</Button>
                 <ShareButton
                   title={`在如愿禅苑为${relation ? RELATIONS.find((r) => r.id === relation)?.label : "家人"}${name}点了一盏祈福灯`}
                   description={wish || "愿心愿成就，福寿安康"}
@@ -494,14 +533,10 @@ export default function BlessingPage() {
               <Sparkles className="size-4 text-gold" />
               <h3 className="font-display text-lg text-gold">供灯墙</h3>
               {!wallLoading && (
-                <span className="text-xs text-paper-dark/40 ml-auto">
-                  {lampWall.length} 盏明灯
-                </span>
+                <span className="text-xs text-paper-dark/40 ml-auto">{lampWall.length} 盏明灯</span>
               )}
             </div>
-            <p className="text-xs text-paper-dark/40 mb-4">
-              盏盏明灯，念念如愿。每一盏灯都是为亲人点亮的真实祈愿。
-            </p>
+            <p className="text-xs text-paper-dark/40 mb-4">盏盏明灯，念念如愿。每一盏灯都是为亲人点亮的真实祈愿。</p>
 
             {wallLoading ? (
               <div className="flex justify-center py-12">
@@ -527,9 +562,7 @@ export default function BlessingPage() {
 
         <ScrollReveal delay={0.3}>
           <div className="mt-4 text-center">
-            <p className="text-xs text-paper-dark/30">
-              一灯传万灯 · 分享传播功德倍增 · 善念起于心，福缘自然生
-            </p>
+            <p className="text-xs text-paper-dark/30">一灯传万灯 · 分享传播功德倍增 · 善念起于心，福缘自然生</p>
           </div>
         </ScrollReveal>
       </div>
