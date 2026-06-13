@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@font-face {
+  font-family: 'ZhiMangXing';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/ZhiMangXing-subset.woff2') format('woff2');
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-xuan: #1E1812;
+  --color-xuan-card: #282018;
+  --color-xuan-surface: #30281E;
+  --color-xuan-dark: #141210;
+  --color-gold: #D4A853;
+  --color-gold-light: #E0C47A;
+  --color-gold-dark: #B8923E;
+  --color-gold-pale: #FCE9A0;
+  --color-vermillion: #C45641;
+  --color-vermillion-light: #D9705F;
+  --color-vermillion-dark: #A8483A;
+  --color-paper: #F7F2E8;
+  --color-paper-dark: #D6CCBA;
+  --color-paper-warm: #F7EDDC;
+  --color-ink: #2D2418;
+  --color-emerald: #3D8B6E;
+  --color-emerald-light: #4EA882;
+  --color-incense: #957020;
+  --color-incense-light: #AD8838;
+  --font-display: 'ZhiMangXing', 'STKaiti', 'KaiTi', serif;
+  --font-body: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --animate-taiji-spin: taiji-spin 2s linear infinite;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-glow-rise: glow-rise 3s ease-in-out infinite;
+  --animate-bounce: bounce 2s ease-in-out infinite;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes taiji-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 5px rgba(212, 168, 83, 0.3); }
+  to { box-shadow: 0 0 20px rgba(212, 168, 83, 0.6); }
+}
+
+@keyframes glow-rise {
+  0%, 100% { opacity: 0.15; transform: translateY(0) scale(1); }
+  50% { opacity: 0.3; transform: translateY(-10px) scale(1.05); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+html {
+  font-size: 18px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #1E1812;
+  color: #F7F2E8;
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Larger touch targets for elderly users */
+input, select, textarea, button {
+  font-size: max(1rem, inherit);
+}
+
+input::placeholder, textarea::placeholder {
+  font-size: 0.95rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #1E1812; }
+::-webkit-scrollbar-thumb { background: #D4A853; border-radius: 2px; }
+
+/* Selection */
+::selection { background: #D4A853; color: #1E1812; }
+
+/* ===== Custom Utilities ===== */
+
+/* Gold divider line */
+.gold-divider {
+  @apply mx-auto w-12 border-t border-gold/15;
+}
+
+/* Paper-warm highlighted section */
+.paper-section {
+  @apply rounded-t-xl rounded-b-xl border-x-4 border-gold/40 bg-paper-warm px-8 py-6 text-ink space-y-4 text-center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Standard card */
+.card-default {
+  @apply rounded-lg border border-gold/20 p-6 shadow-md backdrop-blur-sm transition-all duration-200 hover:border-gold/40 hover:shadow-lg;
+  background-color: rgb(40 32 24 / 0.95);
+}
+
+/* Feature card */
+.card-feature {
+  @apply rounded-lg border border-gold/20 p-6 h-full space-y-4 transition-all duration-200 hover:border-gold/40;
+  background-color: rgb(40 32 24 / 0.95);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.card-feature:hover {
+  box-shadow: 0 0 30px -5px rgba(212, 168, 83, 0.15);
+}
+
+/* Shadow variants */
+.shadow-gold {
+  box-shadow: 0 0 30px -5px rgba(212, 168, 83, 0.15);
+}
+.shadow-paper {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+.shadow-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Text balance for better reading */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Safe area helpers */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

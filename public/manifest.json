@@ -1,0 +1,15 @@
+{
+  "name": "如愿居",
+  "short_name": "如愿居",
+  "description": "心诚则灵。为家人点一盏祈福灯，求一支灵签，看一卦命理八字。一念慈悲，如愿以偿。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1410",
+  "theme_color": "#1a1410",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

@@ -1,0 +1,296 @@
+"use client";
+
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+
+export interface FortuneRecord {
+  id: string;
+  type: "lottery" | "divination" | "bazi" | "naming" | "palm";
+  question: string;
+  result: string;
+  level?: string;
+  timestamp: string;
+}
+
+export interface IncenseRecord {
+  id: string;
+  incense_type: string;
+  rituals: number;
+  merit: number;
+  timestamp: string;
+}
+
+export interface BlessingRecord {
+  id: string;
+  name: string;
+  relation: string;
+  duration: string;
+  price: string;
+  wish: string;
+  status: "pending" | "paid" | "lit";
+  timestamp: string;
+}
+
+export interface DreamRecord {
+  id: string;
+  keyword: string;
+  result: string;
+  ji: string;
+  timestamp: string;
+}
+
+export interface User {
+  phone: string;
+  name: string;
+  avatar: string;
+  merit: number;
+  level: string;
+  total_incense: number;
+  total_blessings: number;
+  total_fortunes: number;
+  created_at: string;
+  last_login?: string;
+}
+
+interface UserContextType {
+  user: User | null;
+  isLoggedIn: boolean;
+  login: (phone: string, name: string) => void;
+  logout: () => void;
+  fortuneHistory: FortuneRecord[];
+  addFortuneRecord: (r: FortuneRecord) => void;
+  incenseHistory: IncenseRecord[];
+  addIncenseRecord: (r: IncenseRecord) => void;
+  blessingHistory: BlessingRecord[];
+  addBlessingRecord: (r: BlessingRecord) => void;
+  dreamHistory: DreamRecord[];
+  addDreamRecord: (r: DreamRecord) => void;
+  addMerit: (amount: number) => void;
+  retrieveRecords: (phone: string) => boolean;
+  showAuthModal: boolean;
+  setShowAuthModal: (v: boolean) => void;
+  pendingAction: (() => void) | null;
+  setPendingAction: (a: (() => void) | null) => void;
+}
+
+const UserContext = createContext<UserContextType | null>(null);
+
+function loadFromStorage<T>(key: string, defaultValue: T): T {
+  if (typeof window === "undefined") return defaultValue;
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : defaultValue;
+  } catch { return defaultValue; }
+}
+
+function saveToStorage(key: string, value: unknown) {
+  if (typeof window === "undefined") return;
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* noop */ }
+}
+
+const STORAGE_USER = "putiyuan_user";
+const STORAGE_FORTUNE = "putiyuan_fortune_history";
+const STORAGE_INCENSE = "putiyuan_incense_history";
+const STORAGE_BLESSING = "putiyuan_blessing_history";
+const STORAGE_DREAM = "putiyuan_dream_history";
+
+function phoneKey(base: string, phone: string) {
+  return `${base}_${phone}`;
+}
+
+export function checkExistingUser(phone: string): User | null {
+  return loadFromStorage<User | null>(`${STORAGE_USER}_${phone}`, null);
+}
+
+const LEVEL_THRESHOLDS: [number, string][] = [
+  [5000, "大功德主"],
+  [1000, "功德主"],
+  [500, "行者"],
+  [100, "居士"],
+  [0, "善信"],
+];
+
+function calcLevel(merit: number): string {
+  for (const [threshold, level] of LEVEL_THRESHOLDS) {
+    if (merit >= threshold) return level;
+  }
+  return "善信";
+}
+
+export function UserProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [fortuneHistory, setFortuneHistory] = useState<FortuneRecord[]>([]);
+  const [incenseHistory, setIncenseHistory] = useState<IncenseRecord[]>([]);
+  const [blessingHistory, setBlessingHistory] = useState<BlessingRecord[]>([]);
+  const [dreamHistory, setDreamHistory] = useState<DreamRecord[]>([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    setUser(loadFromStorage<User | null>(STORAGE_USER, null));
+    setFortuneHistory(loadFromStorage<FortuneRecord[]>(STORAGE_FORTUNE, []));
+    setIncenseHistory(loadFromStorage<IncenseRecord[]>(STORAGE_INCENSE, []));
+    setBlessingHistory(loadFromStorage<BlessingRecord[]>(STORAGE_BLESSING, []));
+    setDreamHistory(loadFromStorage<DreamRecord[]>(STORAGE_DREAM, []));
+  }, []);
+
+  const login = useCallback((phone: string, name: string) => {
+    // Check if returning user
+    const existing = loadFromStorage<User | null>(phoneKey(STORAGE_USER, phone), null);
+
+    if (existing) {
+      // Returning user: load all saved data
+      existing.last_login = new Date().toISOString();
+      setUser(existing);
+      saveToStorage(STORAGE_USER, existing);
+      saveToStorage(phoneKey(STORAGE_USER, phone), existing);
+      setFortuneHistory(loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, phone), []));
+      setIncenseHistory(loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, phone), []));
+      setBlessingHistory(loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, phone), []));
+      setDreamHistory(loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, phone), []));
+    } else {
+      // New user
+      const newUser: User = {
+        phone,
+        name,
+        avatar: name.slice(0, 1),
+        merit: 0,
+        level: "善信",
+        total_incense: 0,
+        total_blessings: 0,
+        total_fortunes: 0,
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
+      setUser(newUser);
+      saveToStorage(STORAGE_USER, newUser);
+      saveToStorage(phoneKey(STORAGE_USER, phone), newUser);
+      setFortuneHistory([]);
+      setIncenseHistory([]);
+      setBlessingHistory([]);
+      setDreamHistory([]);
+    }
+    setShowAuthModal(false);
+  }, []);
+
+  const logout = useCallback(() => {
+    if (user) {
+      const p = user.phone;
+      saveToStorage(phoneKey(STORAGE_USER, p), { ...user, last_login: new Date().toISOString() });
+      saveToStorage(phoneKey(STORAGE_FORTUNE, p), fortuneHistory);
+      saveToStorage(phoneKey(STORAGE_INCENSE, p), incenseHistory);
+      saveToStorage(phoneKey(STORAGE_BLESSING, p), blessingHistory);
+      saveToStorage(phoneKey(STORAGE_DREAM, p), dreamHistory);
+    }
+    setUser(null);
+    saveToStorage(STORAGE_USER, null);
+    setFortuneHistory([]);
+    setIncenseHistory([]);
+    setBlessingHistory([]);
+    setDreamHistory([]);
+  }, [user, fortuneHistory, incenseHistory, blessingHistory, dreamHistory]);
+
+  const addFortuneRecord = useCallback((r: FortuneRecord) => {
+    setFortuneHistory((prev) => {
+      const next = [r, ...prev].slice(0, 50);
+      if (user) saveToStorage(phoneKey(STORAGE_FORTUNE, user.phone), next);
+      return next;
+    });
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, total_fortunes: prev.total_fortunes + 1 };
+      saveToStorage(STORAGE_USER, updated);
+      saveToStorage(phoneKey(STORAGE_USER, prev.phone), updated);
+      return updated;
+    });
+  }, [user]);
+
+  const addIncenseRecord = useCallback((r: IncenseRecord) => {
+    setIncenseHistory((prev) => {
+      const next = [r, ...prev].slice(0, 50);
+      if (user) saveToStorage(phoneKey(STORAGE_INCENSE, user.phone), next);
+      return next;
+    });
+    setUser((prev) => {
+      if (!prev) return prev;
+      const merit = prev.merit + r.merit;
+      const updated = { ...prev, total_incense: prev.total_incense + r.rituals, merit, level: calcLevel(merit) };
+      saveToStorage(STORAGE_USER, updated);
+      saveToStorage(phoneKey(STORAGE_USER, prev.phone), updated);
+      return updated;
+    });
+  }, [user]);
+
+  const addBlessingRecord = useCallback((r: BlessingRecord) => {
+    setBlessingHistory((prev) => {
+      const next = [r, ...prev].slice(0, 50);
+      if (user) saveToStorage(phoneKey(STORAGE_BLESSING, user.phone), next);
+      return next;
+    });
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, total_blessings: prev.total_blessings + 1 };
+      saveToStorage(STORAGE_USER, updated);
+      saveToStorage(phoneKey(STORAGE_USER, prev.phone), updated);
+      return updated;
+    });
+  }, [user]);
+
+  const addDreamRecord = useCallback((r: DreamRecord) => {
+    setDreamHistory((prev) => {
+      const next = [r, ...prev].slice(0, 30);
+      if (user) saveToStorage(phoneKey(STORAGE_DREAM, user.phone), next);
+      return next;
+    });
+  }, [user]);
+
+  const addMerit = useCallback((amount: number) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const merit = prev.merit + amount;
+      const updated = { ...prev, merit, level: calcLevel(merit) };
+      saveToStorage(STORAGE_USER, updated);
+      saveToStorage(phoneKey(STORAGE_USER, prev.phone), updated);
+      return updated;
+    });
+  }, []);
+
+  const retrieveRecords = useCallback((phone: string): boolean => {
+    const saved = loadFromStorage<User | null>(`putiyuan_user_${phone}`, null);
+    if (saved) {
+      setUser((prev) => prev ? { ...prev, merit: saved.merit, level: saved.level, total_incense: saved.total_incense, total_blessings: saved.total_blessings, total_fortunes: saved.total_fortunes } : prev);
+      if (user) {
+        const updated = { ...user, merit: saved.merit, level: saved.level, total_incense: saved.total_incense, total_blessings: saved.total_blessings, total_fortunes: saved.total_fortunes };
+        saveToStorage(STORAGE_USER, updated);
+      }
+      return true;
+    }
+    return false;
+  }, [user]);
+
+  const isLoggedIn = !!user;
+
+  return (
+    <UserContext.Provider
+      value={{
+        user, isLoggedIn, login, logout,
+        fortuneHistory, addFortuneRecord,
+        incenseHistory, addIncenseRecord,
+        blessingHistory, addBlessingRecord,
+        dreamHistory, addDreamRecord,
+        addMerit,
+        retrieveRecords,
+        showAuthModal, setShowAuthModal,
+        pendingAction, setPendingAction,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+}
+
+export function useUser() {
+  const ctx = useContext(UserContext);
+  if (!ctx) throw new Error("useUser must be used within UserProvider");
+  return ctx;
+}
