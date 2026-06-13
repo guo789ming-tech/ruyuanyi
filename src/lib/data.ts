@@ -1054,17 +1054,6 @@ export const BLESSING_CATALOG = [
   { id: "peace", name: "消灾解难", icon: "🔔", description: "愿厄运远离，灾祸不生" },
 ];
 
-export const BLESSING_WALL = [
-  { id: 1, type: "health", name: "善信***", blessing: "愿母亲身体康复，早日出院", lamps: 3, created_at: "1分钟前" },
-  { id: 2, type: "career", name: "居士***", blessing: "愿今年升职顺利", lamps: 1, created_at: "3分钟前" },
-  { id: 3, type: "study", name: "行者***", blessing: "愿孩子高考金榜题名", lamps: 5, created_at: "5分钟前" },
-  { id: 4, type: "peace", name: "善信***", blessing: "愿全家远离灾祸，平平安安", lamps: 2, created_at: "8分钟前" },
-  { id: 5, type: "love", name: "功德主***", blessing: "愿天下有情人终成眷属", lamps: 7, created_at: "10分钟前" },
-  { id: 6, type: "wealth", name: "居士***", blessing: "愿生意兴隆，客似云来", lamps: 1, created_at: "12分钟前" },
-  { id: 7, type: "health", name: "善信***", blessing: "愿父亲早日康复", lamps: 3, created_at: "15分钟前" },
-  { id: 8, type: "study", name: "行者***", blessing: "愿考研顺利上岸", lamps: 2, created_at: "18分钟前" },
-];
-
 // ============ 三位师父 ============
 export const MASTERS = [
   {
