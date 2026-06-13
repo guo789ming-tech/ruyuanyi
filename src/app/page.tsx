@@ -38,7 +38,7 @@ export default function HomePage() {
 
         <ScrollReveal delay={0.15}>
           <div className="space-y-5">
-            <h1 className="font-display text-5xl tracking-[0.25em] text-gold sm:text-6xl">如 愿 居</h1>
+            <h1 className="font-display text-5xl tracking-[0.25em] text-gold sm:text-6xl">如 愿 禅 苑</h1>
             <p className="text-base leading-loose text-paper-dark/80 sm:text-lg">以古籍为根，以师父为引</p>
             <p className="text-base text-paper-dark/60">为家人祈福 · 求灵签 · 看八字</p>
           </div>
