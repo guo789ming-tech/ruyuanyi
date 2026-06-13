@@ -128,7 +128,7 @@ export default function AdminPage() {
   // If not logged in, show login with quick admin access
   if (!isLoggedIn) {
     const quickAdminLogin = () => {
-      login("13800000000", "管理员");
+      login("15638837527", "管理员");
     };
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -148,7 +148,7 @@ export default function AdminPage() {
           <Button variant="secondary" onClick={quickAdminLogin}>
             快速进入（默认管理员）
           </Button>
-          <p className="text-xs text-paper-dark/30">默认管理员手机号 13800000000</p>
+          <p className="text-xs text-paper-dark/30">默认管理员手机号 15638837527</p>
           <AuthModal />
         </div>
       </div>
