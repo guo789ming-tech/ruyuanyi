@@ -24,11 +24,15 @@ const RELATIONS = [
 ];
 
 // ---- Duration visual config ----
-const DURATION_META: Record<string, { icon: string; subtitle: string; flameColor: string; glowColor: string; ringColor: string }> = {
-  "month":    { icon: "🕯️", subtitle: "随喜灯", flameColor: "from-amber-400 to-orange-500",   glowColor: "bg-amber-500/15",    ringColor: "ring-amber-500/20" },
-  "100days":  { icon: "🏮", subtitle: "祈福灯", flameColor: "from-orange-400 to-red-500",      glowColor: "bg-orange-500/15",   ringColor: "ring-orange-500/20" },
-  "year":     { icon: "🪔", subtitle: "长明灯", flameColor: "from-yellow-300 to-amber-500",    glowColor: "bg-gold/20",         ringColor: "ring-gold/30" },
-  "forever":  { icon: "🪷", subtitle: "永驻灯", flameColor: "from-rose-300 via-amber-400 to-rose-400", glowColor: "bg-rose-400/15", ringColor: "ring-rose-400/20" },
+const DURATION_META: Record<string, {
+  icon: string; subtitle: string; desc: string;
+  flameColor: string; glowColor: string; ringColor: string;
+  borderGlow: string;
+}> = {
+  "month":    { icon: "🕯️", subtitle: "随喜灯", desc: "小灯 · 30日长明",   flameColor: "from-amber-400 to-orange-500", glowColor: "bg-amber-500/15", ringColor: "ring-amber-500/20", borderGlow: "shadow-[0_0_30px_rgba(245,158,11,0.12)]" },
+  "100days":  { icon: "🏮", subtitle: "祈福灯", desc: "中灯 · 百日长明",   flameColor: "from-orange-400 to-red-500", glowColor: "bg-orange-500/15", ringColor: "ring-orange-500/20", borderGlow: "shadow-[0_0_30px_rgba(249,115,22,0.12)]" },
+  "year":     { icon: "🪔", subtitle: "长明灯", desc: "大灯 · 全年长明",   flameColor: "from-yellow-300 to-amber-500", glowColor: "bg-gold/20", ringColor: "ring-gold/30", borderGlow: "shadow-[0_0_40px_rgba(212,168,83,0.2)]" },
+  "forever":  { icon: "🪷", subtitle: "永驻灯", desc: "莲灯 · 永久供奉",   flameColor: "from-rose-300 via-amber-400 to-rose-400", glowColor: "bg-rose-400/15", ringColor: "ring-rose-400/20", borderGlow: "shadow-[0_0_40px_rgba(251,113,133,0.15)]" },
 };
 
 const DURATION_BADGE: Record<string, string> = {
@@ -373,10 +377,10 @@ export default function BlessingPage() {
                   </div>
                 </div>
 
-                {/* Duration — Buddhist lamp-card style */}
+                {/* Duration — Temple plaque cards */}
                 <div>
-                  <label className="block text-xs text-paper-dark/60 mb-2">供奉时长</label>
-                  <div className="grid grid-cols-4 gap-2.5">
+                  <label className="block text-xs text-paper-dark/60 mb-3">供奉时长</label>
+                  <div className="grid grid-cols-2 gap-3">
                     {durations.map((d) => {
                       const meta = DURATION_META[d.id] || DURATION_META["month"];
                       const sel = duration === d.id;
@@ -385,33 +389,69 @@ export default function BlessingPage() {
                           key={d.id}
                           onClick={() => setDuration(d.id)}
                           className={cn(
-                            "relative rounded-2xl border py-3.5 px-1 text-center transition-all duration-300 flex flex-col items-center gap-1.5",
+                            "relative rounded-2xl border-2 py-5 px-3 text-center transition-all duration-500 flex flex-col items-center gap-2",
                             sel
-                              ? "border-gold bg-gradient-to-b from-gold/15 to-gold/5 shadow-[0_0_20px_rgba(212,168,83,0.15)] scale-[1.03]"
-                              : "border-gold/15 bg-xuan/60 hover:border-gold/30 hover:bg-xuan/80"
+                              ? "border-gold bg-gradient-to-b from-gold/12 via-gold/5 to-transparent scale-[1.02] " + meta.borderGlow
+                              : "border-gold/10 bg-xuan/40 hover:border-gold/25 hover:bg-xuan/70"
                           )}
                         >
-                          {/* Mini lamp icon */}
-                          <div className="relative">
-                            <span className={cn("text-xl transition-transform", sel && "scale-110")}>
+                          {/* Top ornamental line */}
+                          <div className="flex items-center gap-2 w-full">
+                            <div className={cn("h-px flex-1", sel ? "bg-gradient-to-r from-transparent to-gold/40" : "bg-gold/10")} />
+                            <span className={cn("text-[10px] tracking-[0.3em] font-display", sel ? "text-gold/60" : "text-paper-dark/30")}>
+                              {sel ? "· 供灯 ·" : "供灯"}
+                            </span>
+                            <div className={cn("h-px flex-1", sel ? "bg-gradient-to-l from-transparent to-gold/40" : "bg-gold/10")} />
+                          </div>
+
+                          {/* Lamp with flame */}
+                          <div className="relative mt-1">
+                            <LampFlame colorClass={meta.flameColor} size="sm" />
+                            <span className={cn(
+                              "text-3xl block -mt-1 transition-transform duration-500",
+                              sel && "scale-110 drop-shadow-[0_0_12px_rgba(212,168,83,0.5)]"
+                            )}>
                               {meta.icon}
                             </span>
-                            {sel && (
-                              <div className={cn("absolute inset-0 rounded-full blur-sm", meta.glowColor)} />
-                            )}
                           </div>
-                          {/* Duration name */}
-                          <p className={cn("text-sm font-display tracking-wider", sel ? "text-gold" : "text-paper-dark/70")}>
+
+                          {/* Duration name — large font */}
+                          <p className={cn(
+                            "font-display text-xl tracking-[0.3em] transition-colors duration-500",
+                            sel ? "text-gold" : "text-paper-dark/60"
+                          )}>
                             {d.label}
                           </p>
+
                           {/* Buddhist subtitle */}
-                          <p className={cn("text-[10px] tracking-widest", sel ? "text-gold/70" : "text-paper-dark/40")}>
+                          <p className={cn(
+                            "text-xs tracking-[0.2em] font-display",
+                            sel ? "text-gold/80" : "text-paper-dark/40"
+                          )}>
                             {meta.subtitle}
                           </p>
-                          {/* Price */}
-                          <p className={cn("text-xs font-medium mt-0.5", sel ? "text-gold" : "text-paper-dark/50")}>
-                            {d.price}
-                          </p>
+
+                          {/* Price + desc */}
+                          <div className={cn(
+                            "rounded-lg px-3 py-1.5 mt-1 transition-colors duration-500",
+                            sel ? "bg-gold/10 border border-gold/20" : "bg-transparent"
+                          )}>
+                            <p className={cn("text-base font-medium", sel ? "text-gold" : "text-paper-dark/50")}>
+                              {d.price}
+                            </p>
+                            <p className={cn("text-[10px] mt-0.5", sel ? "text-gold/50" : "text-paper-dark/30")}>
+                              {meta.desc}
+                            </p>
+                          </div>
+
+                          {/* Bottom ornamental dot */}
+                          {sel && (
+                            <div className="flex items-center gap-1.5">
+                              <div className="size-1 rounded-full bg-gold/50" />
+                              <div className="size-1.5 rounded-full bg-gold/70" />
+                              <div className="size-1 rounded-full bg-gold/50" />
+                            </div>
+                          )}
                         </button>
                       );
                     })}
