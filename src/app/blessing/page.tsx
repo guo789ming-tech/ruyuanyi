@@ -54,8 +54,17 @@ function parseDetail(detail: string): { subject: string; duration: string; wish:
 
 function desensitizeName(name: string): string {
   if (!name) return "***";
-  if (name.length <= 1) return name + "**";
+  if (name.length <= 1) return "*";
+  if (name.length === 2) return name[0] + "*";
+  if (name.length === 3) return name[0] + "*" + name[2];
   return name[0] + "**" + name[name.length - 1];
+}
+
+function maskSubject(subject: string): string {
+  // "为母亲张三祈福" → "为母亲张*祈福"
+  return subject.replace(/^为(.{2})(.+?)祈福$/, (_, relation, name) => {
+    return `为${relation}${desensitizeName(name)}祈福`;
+  });
 }
 
 function timeAgo(iso: string): string {
@@ -116,7 +125,7 @@ function LampCard({ entry }: { entry: LampEntry }) {
 
       {/* Subject */}
       <p className="text-center text-sm text-gold font-medium leading-tight mt-1">
-        {entry.subject}
+        {maskSubject(entry.subject)}
       </p>
 
       {/* Wish */}
