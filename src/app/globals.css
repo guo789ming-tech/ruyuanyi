@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'ZhiMangXing';
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url('/fonts/ZhiMangXing-subset.woff2') format('woff2');
-}
-
 @theme inline {
   --color-xuan: #1E1812;
   --color-xuan-card: #282018;
@@ -28,7 +20,7 @@
   --color-emerald-light: #4EA882;
   --color-incense: #957020;
   --color-incense-light: #AD8838;
-  --font-display: 'ZhiMangXing', 'STKaiti', 'KaiTi', serif;
+  --font-display: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
   --font-body: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --animate-taiji-spin: taiji-spin 2s linear infinite;
   --animate-float: float 3s ease-in-out infinite;
