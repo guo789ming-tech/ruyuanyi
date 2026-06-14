@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BodhiLeaf } from "@/components/BodhiLogo";
@@ -7,11 +8,32 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { ShareButton } from "@/components/ShareButton";
 import { cn } from "@/lib/utils";
 
-const FEATURES = [
+function SignTubeIcon() {
+  return (
+    <span className="inline-flex items-center justify-center" style={{ width: 36, height: 44 }}>
+      <span className="flex justify-center gap-px" style={{ paddingTop: 2 }}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <span
+            key={i}
+            className="inline-block"
+            style={{
+              width: 3,
+              height: 18,
+              background: "linear-gradient(to bottom, #C45641 0%, #C45641 20%, #E8D5A3 20%, #D4C08C 100%)",
+              borderRadius: "1px 1px 0 0",
+            }}
+          />
+        ))}
+      </span>
+    </span>
+  );
+}
+
+const FEATURES: { href: string; icon: ReactNode; title: string; desc: string; badge: string | null }[] = [
   { href: "/blessing", icon: "🪔", title: "镇宅祈福", desc: "为家人点灯祈福，挂名长明", badge: null },
   { href: "/almanac", icon: "📅", title: "今日黄历", desc: "干支宜忌、神煞冲煞、十二时辰", badge: "新增" },
   { href: "/dream", icon: "🌙", title: "周公解梦", desc: "百梦皆有意，古今相参证", badge: null },
-  { href: "/fortune", icon: "🔮", title: "关帝灵签", desc: "心诚则灵，一签一事。百支签文", badge: null },
+  { href: "/fortune", icon: <SignTubeIcon />, title: "关帝灵签", desc: "心诚则灵，一签一事。百支签文", badge: null },
   { href: "/bazi", icon: "☯️", title: "八字精批", desc: "真排盘，看命格根骨与一生气运", badge: null },
   { href: "/divination", icon: "☰", title: "六爻占卜", desc: "三铜起卦，观爻象定一时趋避", badge: null },
   { href: "/palm", icon: "✋", title: "手相图解", desc: "依传统手相学逐线开示", badge: null },

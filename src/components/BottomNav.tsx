@@ -1,16 +1,38 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-const MAIN_NAV = [
+function NavSignTube() {
+  return (
+    <span className="inline-flex justify-center items-end" style={{ width: 28, height: 28 }}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className="inline-block"
+          style={{
+            width: 3,
+            height: 16,
+            background: "linear-gradient(to bottom, #C45641 0%, #C45641 20%, #E8D5A3 20%, #D4C08C 100%)",
+            borderRadius: "1px 1px 0 0",
+            margin: "0 0.5px",
+            marginTop: 10,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+const MAIN_NAV: { href: string; label: string; icon: ReactNode }[] = [
   { href: "/", label: "首页", icon: "🏠" },
   { href: "/blessing", label: "祈福", icon: "🪔" },
   { href: "/almanac", label: "黄历", icon: "📅" },
-  { href: "/fortune", label: "灵签", icon: "🔮" },
+  { href: "/fortune", label: "灵签", icon: <NavSignTube /> },
   { href: "/me", label: "我的", icon: "👤" },
   { href: "#more", label: "更多", icon: "⋯" },
 ];
