@@ -166,6 +166,27 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setBlessingHistory(loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, p), []));
       setDreamHistory(loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, p), []));
       void syncRecordsFromSupabase(p);
+      // Also pull latest user profile from Supabase
+      void (async () => {
+        const remote = await fetchUserFromSupabase(p);
+        if (remote) {
+          const updated: User = {
+            phone: remote.phone as string,
+            name: remote.name as string,
+            avatar: remote.avatar as string,
+            merit: remote.merit as number,
+            level: remote.level as string,
+            total_incense: remote.total_incense as number,
+            total_blessings: remote.total_blessings as number,
+            total_fortunes: remote.total_fortunes as number,
+            created_at: remote.created_at as string,
+            last_login: remote.last_login as string,
+          };
+          setUser(updated);
+          saveToStorage(STORAGE_USER, updated);
+          saveToStorage(phoneKey(STORAGE_USER, p), updated);
+        }
+      })();
     } else {
       setFortuneHistory(loadFromStorage<FortuneRecord[]>(STORAGE_FORTUNE, []));
       setIncenseHistory(loadFromStorage<IncenseRecord[]>(STORAGE_INCENSE, []));
@@ -226,16 +247,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setShowAuthModal(false);
   }, []);
 
-  // Pull records from Supabase and merge into state
+  // Pull records from Supabase and merge into state; also backfill local to remote
   async function syncRecordsFromSupabase(phone: string) {
     try {
-      const [fortune, incense, blessing, dream] = await Promise.all([
+      const localFortune = loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, phone), []);
+      const localIncense = loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, phone), []);
+      const localBlessing = loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, phone), []);
+      const localDream = loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, phone), []);
+
+      const [remoteFortune, remoteIncense, remoteBlessing, remoteDream] = await Promise.all([
         fetchHistoryFromSupabase(phone, "fortune"),
         fetchHistoryFromSupabase(phone, "incense"),
         fetchHistoryFromSupabase(phone, "blessing"),
         fetchHistoryFromSupabase(phone, "dream"),
       ]);
-      const mapRecords = (rows: SupabaseHistoryRecord[]) =>
+
+      const mapGeneric = (rows: SupabaseHistoryRecord[]) =>
         rows.map((r) => r.data as unknown as FortuneRecord);
       const mapBlessing = (rows: SupabaseHistoryRecord[]) =>
         rows.map((r) => r.data as unknown as BlessingRecord);
@@ -244,26 +271,45 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const mapDream = (rows: SupabaseHistoryRecord[]) =>
         rows.map((r) => r.data as unknown as DreamRecord);
 
-      if (fortune.length > 0) {
-        const merged = mergeRecords(mapRecords(fortune), loadFromStorage<FortuneRecord[]>(phoneKey(STORAGE_FORTUNE, phone), []));
-        setFortuneHistory(merged);
-        saveToStorage(phoneKey(STORAGE_FORTUNE, phone), merged);
+      const remoteIds = new Set(remoteFortune.map((r) => r.id));
+
+      // Backfill: push local-only records to Supabase
+      for (const r of localFortune) {
+        if (!remoteIds.has(r.id)) {
+          syncHistoryToSupabase({ id: r.id, user_phone: phone, record_type: "fortune", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        }
       }
-      if (incense.length > 0) {
-        const merged = mergeRecords(mapIncense(incense), loadFromStorage<IncenseRecord[]>(phoneKey(STORAGE_INCENSE, phone), []));
-        setIncenseHistory(merged);
-        saveToStorage(phoneKey(STORAGE_INCENSE, phone), merged);
+      for (const r of localIncense) {
+        if (!remoteIds.has(r.id)) {
+          syncHistoryToSupabase({ id: r.id, user_phone: phone, record_type: "incense", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        }
       }
-      if (blessing.length > 0) {
-        const merged = mergeRecords(mapBlessing(blessing), loadFromStorage<BlessingRecord[]>(phoneKey(STORAGE_BLESSING, phone), []));
-        setBlessingHistory(merged);
-        saveToStorage(phoneKey(STORAGE_BLESSING, phone), merged);
+      for (const r of localBlessing) {
+        if (!remoteIds.has(r.id)) {
+          syncHistoryToSupabase({ id: r.id, user_phone: phone, record_type: "blessing", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        }
       }
-      if (dream.length > 0) {
-        const merged = mergeRecords(mapDream(dream), loadFromStorage<DreamRecord[]>(phoneKey(STORAGE_DREAM, phone), []));
-        setDreamHistory(merged);
-        saveToStorage(phoneKey(STORAGE_DREAM, phone), merged);
+      for (const r of localDream) {
+        if (!remoteIds.has(r.id)) {
+          syncHistoryToSupabase({ id: r.id, user_phone: phone, record_type: "dream", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        }
       }
+
+      // Merge: remote + local, deduped
+      const mergedFortune = mergeRecords(mapGeneric(remoteFortune), localFortune);
+      const mergedIncense = mergeRecords(mapIncense(remoteIncense), localIncense);
+      const mergedBlessing = mergeRecords(mapBlessing(remoteBlessing), localBlessing);
+      const mergedDream = mergeRecords(mapDream(remoteDream), localDream);
+
+      setFortuneHistory(mergedFortune);
+      setIncenseHistory(mergedIncense);
+      setBlessingHistory(mergedBlessing);
+      setDreamHistory(mergedDream);
+
+      saveToStorage(phoneKey(STORAGE_FORTUNE, phone), mergedFortune);
+      saveToStorage(phoneKey(STORAGE_INCENSE, phone), mergedIncense);
+      saveToStorage(phoneKey(STORAGE_BLESSING, phone), mergedBlessing);
+      saveToStorage(phoneKey(STORAGE_DREAM, phone), mergedDream);
     } catch (e) {
       console.error("syncRecordsFromSupabase error:", e);
     }
