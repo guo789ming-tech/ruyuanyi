@@ -2,24 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Sun, Moon } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ShareButton } from "@/components/ShareButton";
-import { MOCK_ALMANAC } from "@/lib/data";
-import { delay, cn } from "@/lib/utils";
+import { getTodayAlmanac, type AlmanacData } from "@/lib/almanac";
+import { cn } from "@/lib/utils";
 
 export default function AlmanacPage() {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<typeof MOCK_ALMANAC.data | null>(null);
+  const [data, setData] = useState<AlmanacData | null>(null);
 
   useEffect(() => {
-    const load = async () => {
-      await delay(800);
-      setData(MOCK_ALMANAC.data);
-      setLoading(false);
-    };
-    load();
+    setData(getTodayAlmanac());
   }, []);
 
   return (
@@ -33,17 +26,6 @@ export default function AlmanacPage() {
             <h1 className="font-display text-2xl text-gold">今日黄历</h1>
           </div>
         </ScrollReveal>
-
-        {loading && (
-          <div className="mt-12 flex flex-col items-center gap-4">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="size-12 rounded-full border-2 border-gold/30 border-t-gold"
-            />
-            <p className="text-sm text-gold/70 animate-pulse">加载今日黄历...</p>
-          </div>
-        )}
 
         {data && (
           <div className="mt-6 space-y-5">
