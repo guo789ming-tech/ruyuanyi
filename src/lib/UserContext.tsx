@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { syncHistoryToSupabase, fetchHistoryFromSupabase, syncUserToSupabase, fetchUserFromSupabase, type SupabaseHistoryRecord } from "@/lib/supabase";
+import { sanitizeInput, sanitizeLong } from "@/lib/sanitize";
 
 export interface FortuneRecord {
   id: string;
@@ -196,6 +197,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback((phone: string, name: string) => {
+    const cleanName = sanitizeInput(name, 50);
     const local = loadFromStorage<User | null>(phoneKey(STORAGE_USER, phone), null);
 
     // Always pull from Supabase for cross-device consistency
@@ -223,7 +225,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       } else {
         // New user
         userData = {
-          phone, name, avatar: name.slice(0, 1),
+          phone, name: cleanName, avatar: cleanName.slice(0, 1),
           merit: 0, level: "善信",
           total_incense: 0, total_blessings: 0, total_fortunes: 0,
           created_at: new Date().toISOString(),
@@ -347,11 +349,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user, fortuneHistory, incenseHistory, blessingHistory, dreamHistory]);
 
   const addFortuneRecord = useCallback((r: FortuneRecord) => {
+    const sanitized: FortuneRecord = { ...r, question: sanitizeLong(r.question), result: sanitizeLong(r.result) };
     setFortuneHistory((prev) => {
-      const next = [r, ...prev].slice(0, 50);
+      const next = [sanitized, ...prev].slice(0, 50);
       if (user) {
         saveToStorage(phoneKey(STORAGE_FORTUNE, user.phone), next);
-        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "fortune", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        syncHistoryToSupabase({ id: sanitized.id, user_phone: user.phone, record_type: "fortune", data: sanitized as unknown as Record<string, unknown>, timestamp: sanitized.timestamp });
       }
       return next;
     });
@@ -384,11 +387,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const addBlessingRecord = useCallback((r: BlessingRecord) => {
+    const sanitized: BlessingRecord = { ...r, name: sanitizeInput(r.name, 100), wish: sanitizeLong(r.wish) };
     setBlessingHistory((prev) => {
-      const next = [r, ...prev].slice(0, 50);
+      const next = [sanitized, ...prev].slice(0, 50);
       if (user) {
         saveToStorage(phoneKey(STORAGE_BLESSING, user.phone), next);
-        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "blessing", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        syncHistoryToSupabase({ id: sanitized.id, user_phone: user.phone, record_type: "blessing", data: sanitized as unknown as Record<string, unknown>, timestamp: sanitized.timestamp });
       }
       return next;
     });
@@ -402,11 +406,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const addDreamRecord = useCallback((r: DreamRecord) => {
+    const sanitized: DreamRecord = { ...r, keyword: sanitizeInput(r.keyword, 200), result: sanitizeLong(r.result) };
     setDreamHistory((prev) => {
-      const next = [r, ...prev].slice(0, 30);
+      const next = [sanitized, ...prev].slice(0, 30);
       if (user) {
         saveToStorage(phoneKey(STORAGE_DREAM, user.phone), next);
-        syncHistoryToSupabase({ id: r.id, user_phone: user.phone, record_type: "dream", data: r as unknown as Record<string, unknown>, timestamp: r.timestamp });
+        syncHistoryToSupabase({ id: sanitized.id, user_phone: user.phone, record_type: "dream", data: sanitized as unknown as Record<string, unknown>, timestamp: sanitized.timestamp });
       }
       return next;
     });

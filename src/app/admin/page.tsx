@@ -64,7 +64,35 @@ export default function AdminPage() {
   const [notification, setNotification] = useState<{ id: number; text: string } | null>(null);
   const hasMounted = useRef(false);
 
+  // PIN verification
+  const [pinVerified, setPinVerified] = useState(false);
+  const [pinCode, setPinCode] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [pinChecking, setPinChecking] = useState(false);
+
   const { login } = useUser();
+
+  async function verifyPin(pin: string): Promise<boolean> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    return hashHex === systemConfig.adminPinHash;
+  }
+
+  const handlePinSubmit = async () => {
+    setPinError("");
+    setPinChecking(true);
+    const ok = await verifyPin(pinCode);
+    setPinChecking(false);
+    if (ok) {
+      setPinVerified(true);
+    } else {
+      setPinError("PIN 码错误");
+      setPinCode("");
+    }
+  };
 
   // Play a simple chime sound
   const playChime = () => {
@@ -167,6 +195,45 @@ export default function AdminPage() {
           <Button variant="secondary" onClick={() => router.push("/")}>
             返回首页
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Admin but PIN not yet verified
+  if (!pinVerified) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center space-y-5 w-full max-w-sm px-4">
+          <div className="text-center">
+            <span className="text-5xl">🔐</span>
+            <h2 className="mt-2 font-display text-xl text-gold">管理后台</h2>
+            <p className="mt-1 text-xs text-paper-dark/50">
+              已登录 {user?.name || user?.phone}，请输入管理 PIN 码
+            </p>
+          </div>
+          <div className="space-y-3">
+            <input
+              type="password"
+              value={pinCode}
+              onChange={(e) => { setPinCode(e.target.value); setPinError(""); }}
+              onKeyDown={(e) => { if (e.key === "Enter") handlePinSubmit(); }}
+              placeholder="输入 6 位以上管理 PIN 码"
+              maxLength={20}
+              autoFocus
+              className="w-full rounded-xl border border-gold/20 bg-xuan/80 px-4 py-3 text-sm text-center text-paper placeholder:text-paper-dark/30 focus:border-gold/50 focus:outline-none"
+            />
+            {pinError && <p className="text-xs text-vermillion">{pinError}</p>}
+            <Button variant="ritual" className="w-full" loading={pinChecking} onClick={handlePinSubmit}>
+              验证进入
+            </Button>
+          </div>
+          <button
+            onClick={() => router.push("/")}
+            className="text-xs text-paper-dark/30 hover:text-gold"
+          >
+            ← 返回首页
+          </button>
         </div>
       </div>
     );

@@ -45,6 +45,7 @@ export interface SystemConfig {
   siteName: string;
   adminPhones: string[];
   siteDescription: string;
+  adminPinHash: string; // SHA-256 of admin secondary PIN
 }
 
 const DEFAULT_PRICING: PricingConfig = {
@@ -61,6 +62,7 @@ const DEFAULT_SYSTEM_CONFIG: SystemConfig = {
   siteName: "如愿禅苑",
   adminPhones: ["15638837527"],
   siteDescription: "心诚则灵。为家人点一盏祈福灯，求一支灵签，看一卦命理八字。",
+  adminPinHash: "c4409ef2f2815b3bb06a6fa2c3d21d72869c7ffe38b3a0fa611da9ca0e386417",
 };
 
 const STORAGE_PRICING = "ruyuanyi_admin_pricing";
