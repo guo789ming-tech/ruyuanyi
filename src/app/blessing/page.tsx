@@ -18,6 +18,8 @@ const RELATIONS = [
   { id: "mother", label: "母亲" },
   { id: "lover", label: "爱人" },
   { id: "child", label: "孩子" },
+  { id: "sister", label: "姐妹" },
+  { id: "brother", label: "兄弟" },
   { id: "grandchild", label: "孙辈" },
   { id: "friend", label: "朋友" },
   { id: "self", label: "自己" },
