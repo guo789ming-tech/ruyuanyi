@@ -7,14 +7,14 @@ import { ArrowLeft } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ShareButton } from "@/components/ShareButton";
 import { Button } from "@/components/Button";
-import { MOCK_DIVINATION } from "@/lib/data";
+import { generateDivination, type DivinationResult } from "@/lib/divination";
 import { useUser } from "@/lib/UserContext";
 import { delay } from "@/lib/utils";
 
 export default function DivinationPage() {
   const [question, setQuestion] = useState("");
   const [casting, setCasting] = useState(false);
-  const [result, setResult] = useState<typeof MOCK_DIVINATION | null>(null);
+  const [result, setResult] = useState<DivinationResult | null>(null);
   const [error, setError] = useState("");
   const { addFortuneRecord } = useUser();
 
@@ -24,7 +24,7 @@ export default function DivinationPage() {
     setCasting(true);
     setResult(null);
     await delay(2000 + Math.random() * 1000);
-    const divResult = { ...MOCK_DIVINATION, data: { ...MOCK_DIVINATION.data, session_id: `div_${Date.now()}` } };
+    const divResult = generateDivination();
     setResult(divResult);
     addFortuneRecord({
       id: `div_${Date.now()}`,

@@ -1,45 +1,118 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Award, Flame, TrendingUp, Zap, Gift } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ShareButton } from "@/components/ShareButton";
-import { Button } from "@/components/Button";
-import { MOCK_MERIT, MOCK_LEADERBOARD } from "@/lib/data";
+import { useUser, type User } from "@/lib/UserContext";
 import { delay, cn } from "@/lib/utils";
 
+const LEVEL_THRESHOLDS: [number, string][] = [
+  [5000, "大功德主"],
+  [1000, "功德主"],
+  [500, "行者"],
+  [100, "居士"],
+  [0, "善信"],
+];
+
+const MAX_INCENSE_PER_DAY = 3;
+const STORAGE_TODAY = "ruyuanyi_merit_today";
+
+function getTodayKey(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export default function MeritPage() {
-  const [merit, setMerit] = useState(MOCK_MERIT.data.merit);
-  const [todayIncense, setTodayIncense] = useState(MOCK_MERIT.data.today_incense);
-  const [todayCheckin, setTodayCheckin] = useState(MOCK_MERIT.data.today_checkin);
+  const { user, isLoggedIn, addMerit, incenseHistory, fortuneHistory, blessingHistory, dreamHistory } = useUser();
+
+  const todayKey = getTodayKey();
+  const saved = typeof window !== "undefined" ? (() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_TODAY);
+      return raw ? JSON.parse(raw) : { date: "", checkin: false, incense: 0 };
+    } catch { return { date: "", checkin: false, incense: 0 }; }
+  })() : { date: "", checkin: false, incense: 0 };
+
+  const isToday = saved.date === todayKey;
+  const [todayCheckin, setTodayCheckin] = useState(isToday && saved.checkin);
+  const [todayIncense, setTodayIncense] = useState(isToday ? saved.incense : 0);
+
   const [showAnimation, setShowAnimation] = useState(false);
   const [animText, setAnimText] = useState("");
 
+  // Persist today state
+  useEffect(() => {
+    localStorage.setItem(STORAGE_TODAY, JSON.stringify({ date: todayKey, checkin: todayCheckin, incense: todayIncense }));
+  }, [todayCheckin, todayIncense]);
+
+  const merit = user?.merit || 0;
+  const currentLevel = LEVEL_THRESHOLDS.find(([t]) => merit >= t)?.[1] || "善信";
+  const nextLevel = LEVEL_THRESHOLDS.slice().reverse().find(([t]) => t > merit);
+
   const handleCheckin = async () => {
-    if (todayCheckin) return;
+    if (todayCheckin || !isLoggedIn) return;
     setAnimText("功德 +10");
     setShowAnimation(true);
-    setMerit((m) => m + 10);
     setTodayCheckin(true);
+    addMerit(10);
     await delay(1500);
     setShowAnimation(false);
   };
 
   const handleIncense = async () => {
-    if (todayIncense >= MOCK_MERIT.data.max_incense_per_day) return;
+    if (todayIncense >= MAX_INCENSE_PER_DAY || !isLoggedIn) return;
     setAnimText("功德 +5");
     setShowAnimation(true);
-    setMerit((m) => m + 5);
-    setTodayIncense((n) => n + 1);
+    setTodayIncense((n: number) => n + 1);
+    addMerit(5);
     await delay(1500);
     setShowAnimation(false);
   };
 
-  const levelInfo = MOCK_MERIT.data.level_thresholds;
-  const currentLevel = Object.entries(levelInfo).reduce((acc, [level, threshold]) => (merit >= threshold ? level : acc), "善信");
-  const nextLevel = Object.entries(levelInfo).find(([, t]) => t > merit);
+  // Recent records from all histories (real data)
+  const recentRecords = (() => {
+    const all: { action: string; amount: number; timestamp: string }[] = [];
+    for (const r of fortuneHistory) {
+      all.push({ action: r.type === "lottery" ? "求签" : "占卜", amount: 5, timestamp: r.timestamp });
+    }
+    for (const r of incenseHistory) {
+      all.push({ action: `上香 · ${r.rituals}礼`, amount: r.merit, timestamp: r.timestamp });
+    }
+    for (const r of blessingHistory) {
+      all.push({ action: "祈福点灯", amount: 10, timestamp: r.timestamp });
+    }
+    for (const r of dreamHistory) {
+      all.push({ action: "解梦", amount: 3, timestamp: r.timestamp });
+    }
+    all.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    return all.slice(0, 10);
+  })();
+
+  // Leaderboard from localStorage
+  const [leaderboard, setLeaderboard] = useState<{ phone: string; name: string; merit: number; level: string }[]>([]);
+  const [myRank, setMyRank] = useState<number | null>(null);
+
+  useEffect(() => {
+    const entries: { phone: string; name: string; merit: number; level: string }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith("ruyuanyi_user_1")) {
+        try {
+          const u = JSON.parse(localStorage.getItem(key)!) as User;
+          entries.push({ phone: u.phone, name: u.name, merit: u.merit, level: u.level });
+        } catch { /* skip corrupt data */ }
+      }
+    }
+    entries.sort((a, b) => b.merit - a.merit);
+    setLeaderboard(entries.slice(0, 20));
+    if (user) {
+      const idx = entries.findIndex((e) => e.phone === user.phone);
+      setMyRank(idx >= 0 ? idx + 1 : null);
+    }
+  }, [user, merit]);
 
   return (
     <main className="flex-1">
@@ -80,11 +153,11 @@ export default function MeritPage() {
             {nextLevel && (
               <div className="mt-3">
                 <div className="flex justify-between text-xs text-paper-dark/40 mb-1">
-                  <span>距{nextLevel[0]}</span>
-                  <span>{merit}/{nextLevel[1]}</span>
+                  <span>距{nextLevel[1]}</span>
+                  <span>{merit}/{nextLevel[0]}</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-xuan-surface/80 overflow-hidden">
-                  <motion.div className="h-full rounded-full bg-gold" initial={{ width: 0 }} animate={{ width: `${Math.min(100, (merit / nextLevel[1]) * 100)}%` }} transition={{ duration: 0.8 }} />
+                  <motion.div className="h-full rounded-full bg-gold" initial={{ width: 0 }} animate={{ width: `${Math.min(100, (merit / nextLevel[0]) * 100)}%` }} transition={{ duration: 0.8 }} />
                 </div>
               </div>
             )}
@@ -106,12 +179,12 @@ export default function MeritPage() {
 
             <button
               onClick={handleIncense}
-              disabled={todayIncense >= MOCK_MERIT.data.max_incense_per_day}
-              className={cn("rounded-2xl border p-4 text-center transition-colors", todayIncense >= MOCK_MERIT.data.max_incense_per_day ? "border-gold/10 bg-xuan-surface/30 opacity-50 cursor-not-allowed" : "border-gold/20 bg-xuan-surface/60 hover:border-gold/40 hover:bg-gold/5")}
+              disabled={todayIncense >= MAX_INCENSE_PER_DAY}
+              className={cn("rounded-2xl border p-4 text-center transition-colors", todayIncense >= MAX_INCENSE_PER_DAY ? "border-gold/10 bg-xuan-surface/30 opacity-50 cursor-not-allowed" : "border-gold/20 bg-xuan-surface/60 hover:border-gold/40 hover:bg-gold/5")}
             >
               <Flame className="mx-auto size-6 text-orange-400" />
               <p className="mt-2 text-sm font-medium text-gold">烧香祈福</p>
-              <p className="mt-0.5 text-xs text-paper-dark/50">{todayIncense}/{MOCK_MERIT.data.max_incense_per_day} · +5功德</p>
+              <p className="mt-0.5 text-xs text-paper-dark/50">{todayIncense}/{MAX_INCENSE_PER_DAY} · +5功德</p>
             </button>
           </div>
         </ScrollReveal>
@@ -123,12 +196,16 @@ export default function MeritPage() {
               <TrendingUp className="size-3" />近期记录
             </h3>
             <div className="mt-2 space-y-1.5">
-              {MOCK_MERIT.data.recent_records.map((r, i) => (
-                <div key={i} className="flex items-center justify-between text-xs">
-                  <span className="text-paper-dark/70">{r.action}</span>
-                  <span className="text-gold/60">+{r.amount}</span>
-                </div>
-              ))}
+              {recentRecords.length === 0 ? (
+                <p className="text-xs text-paper-dark/40 text-center py-4">暂无记录 · 求签上香即得功德</p>
+              ) : (
+                recentRecords.slice(0, 8).map((r, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <span className="text-paper-dark/70">{r.action}</span>
+                    <span className="text-gold/60">+{r.amount}</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </ScrollReveal>
@@ -141,28 +218,30 @@ export default function MeritPage() {
               <h3 className="font-display text-lg text-gold">功德排行榜</h3>
             </div>
 
-            {/* My rank */}
-            <div className="mb-3 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 flex items-center gap-3">
-              <span className="font-mono text-sm text-gold">#{MOCK_LEADERBOARD.data.my_rank}</span>
-              <span className="flex-1 text-sm text-paper-dark">我的排名</span>
-              <span className="text-sm text-gold">{merit.toLocaleString()}功德</span>
-            </div>
+            {myRank && (
+              <div className="mb-3 rounded-lg border border-gold/30 bg-gold/5 px-4 py-3 flex items-center gap-3">
+                <span className="font-mono text-sm text-gold">#{myRank}</span>
+                <span className="flex-1 text-sm text-paper-dark">我的排名</span>
+                <span className="text-sm text-gold">{merit.toLocaleString()}功德</span>
+              </div>
+            )}
 
             <div className="space-y-2">
-              {MOCK_LEADERBOARD.data.entries.map((entry) => {
-                const badgeColor = entry.badge === "gold" ? "text-yellow-400" : entry.badge === "silver" ? "text-zinc-300" : "text-amber-600";
-                return (
-                  <div key={entry.rank} className={cn("flex items-center gap-3 rounded-lg px-3 py-2.5", entry.rank <= 3 ? "bg-gold/5 border border-gold/10" : "")}>
-                    <span className={cn("w-6 text-center font-mono text-sm", entry.rank <= 3 ? badgeColor : "text-paper-dark/40")}>
-                      {entry.rank <= 3 ? ["🥇", "🥈", "🥉"][entry.rank - 1] : entry.rank}
+              {leaderboard.length === 0 ? (
+                <p className="text-xs text-paper-dark/40 text-center py-4">暂无数据</p>
+              ) : (
+                leaderboard.slice(0, 10).map((entry, i) => (
+                  <div key={entry.phone} className={cn("flex items-center gap-3 rounded-lg px-3 py-2.5", i < 3 ? "bg-gold/5 border border-gold/10" : "")}>
+                    <span className={cn("w-6 text-center font-mono text-sm", i < 3 ? ["text-yellow-400", "text-zinc-300", "text-amber-600"][i] : "text-paper-dark/40")}>
+                      {i < 3 ? ["🥇", "🥈", "🥉"][i] : i + 1}
                     </span>
-                    <Award className={cn("size-3", badgeColor)} />
-                    <span className="flex-1 text-sm text-paper-dark">{entry.nickname}</span>
+                    <Award className={cn("size-3", i < 3 ? ["text-yellow-400", "text-zinc-300", "text-amber-600"][i] : "")} />
+                    <span className="flex-1 text-sm text-paper-dark truncate">{entry.name}</span>
                     <span className="text-xs text-gold/70">{entry.level}</span>
                     <span className="text-xs text-paper-dark/50 w-16 text-right">{entry.merit.toLocaleString()}</span>
                   </div>
-                );
-              })}
+                ))
+              )}
             </div>
           </div>
         </ScrollReveal>
@@ -170,7 +249,7 @@ export default function MeritPage() {
         <ScrollReveal delay={0.3}>
           <div className="mt-6 text-center">
             <p className="font-display text-sm text-gold/50">日行一善 · 功德无量</p>
-            <ShareButton title="如愿禅苑功德榜" description={`我已累积${merit}功德，排名第${MOCK_LEADERBOARD.data.my_rank}位`} className="mt-3" />
+            <ShareButton title="如愿禅苑功德榜" description={`我已累积${merit}功德${myRank ? `，排名第${myRank}位` : ""}`} className="mt-3" />
           </div>
         </ScrollReveal>
       </div>

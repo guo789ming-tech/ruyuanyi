@@ -7,7 +7,7 @@ import { ArrowLeft, BookOpen, Search } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ShareButton } from "@/components/ShareButton";
 import { Button } from "@/components/Button";
-import { DREAM_CATEGORIES, MOCK_DREAM } from "@/lib/data";
+import { DREAM_CATEGORIES, interpretDream } from "@/lib/data";
 import { useUser } from "@/lib/UserContext";
 import { delay } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ export default function DreamPage() {
   const [view, setView] = useState<"categories" | "search" | "result">("categories");
   const [keyword, setKeyword] = useState("");
   const [searching, setSearching] = useState(false);
-  const [result, setResult] = useState<ReturnType<typeof MOCK_DREAM> | null>(null);
+  const [result, setResult] = useState<ReturnType<typeof interpretDream> | null>(null);
   const [error, setError] = useState("");
   const { addDreamRecord } = useUser();
 
@@ -27,7 +27,7 @@ export default function DreamPage() {
     setSearching(true);
     setView("search");
     await delay(1500);
-    const dreamResult = MOCK_DREAM(q);
+    const dreamResult = interpretDream(q);
     setResult(dreamResult);
     addDreamRecord({
       id: `dream_${Date.now()}`,
@@ -116,7 +116,7 @@ export default function DreamPage() {
   );
 }
 
-function DreamResult({ result, keyword, onBack }: { result: ReturnType<typeof MOCK_DREAM>; keyword: string; onBack: () => void }) {
+function DreamResult({ result, keyword, onBack }: { result: ReturnType<typeof interpretDream>; keyword: string; onBack: () => void }) {
   const data = result.data;
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">

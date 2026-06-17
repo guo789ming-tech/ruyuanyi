@@ -12,7 +12,8 @@ import { PaymentModal } from "@/components/PaymentModal";
 import { usePaymentWall } from "@/lib/usePaymentWall";
 import { useUser } from "@/lib/UserContext";
 import { useAdmin } from "@/lib/AdminContext";
-import { MOCK_BAZI, MOCK_BAZI_ANALYSIS, MASTERS } from "@/lib/data";
+import { MOCK_BAZI_ANALYSIS, MASTERS } from "@/lib/data";
+import { getBaziChart, type BaziChart } from "@/lib/almanac";
 import { delay, cn } from "@/lib/utils";
 
 type TabKey = "chart" | "personality" | "career" | "wealth" | "relationship" | "health";
@@ -64,6 +65,7 @@ export default function BaziPage() {
   const [master, setMaster] = useState("huiming");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("chart");
+  const [baziChart, setBaziChart] = useState<BaziChart | null>(null);
   const { addFortuneRecord, addMerit, user } = useUser();
   const { addOrder, pricing } = useAdmin();
   const payment = usePaymentWall("bazi", pricing.bazi);
@@ -75,10 +77,23 @@ export default function BaziPage() {
     if (calendarType === "solar" && !birthDate) { setError("请选择出生日期"); return; }
     setError("");
 
-    const finalBirthDate =
-      calendarType === "solar"
-        ? birthDate
-        : `${lunarYear}-${String(lunarMonth).padStart(2, "0")}-${String(lunarDay).padStart(2, "0")}`;
+    let year: number, month: number, day: number;
+    if (calendarType === "solar") {
+      const [y, m, d] = birthDate.split("-").map(Number);
+      year = y; month = m; day = d;
+    } else {
+      year = lunarYear; month = lunarMonth; day = lunarDay;
+    }
+
+    const chart = getBaziChart({
+      gender: gender === "male" ? "男" : "女",
+      calendarType,
+      year,
+      month,
+      day,
+      shichenValue: birthShichen,
+    });
+    setBaziChart(chart);
     payment.setIsPaid();
     setStep("loading");
     await delay(2000);
@@ -87,11 +102,13 @@ export default function BaziPage() {
   };
 
   const handlePaymentSuccess = () => {
+    const dm = baziChart ? `${baziChart.day_master}${baziChart.day_master_element}` : "";
+    const ptn = baziChart?.pattern || "";
     addFortuneRecord({
       id: `bazi_${Date.now()}`,
       type: "bazi",
       question: `${MASTERS.find((m) => m.id === master)!.name} · ${name} 八字精批`,
-      result: `${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
+      result: `${dm} · ${ptn}`,
       timestamp: new Date().toISOString(),
     });
     addMerit(28);
@@ -102,7 +119,7 @@ export default function BaziPage() {
       amount: pricing.bazi,
       amountNumber: parseFloat(pricing.bazi.replace("¥", "")) || 0,
       status: "pending",
-      detail: `${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`,
+      detail: `${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${dm} · ${ptn}`,
     });
     payment.markPending();
   };
@@ -253,14 +270,14 @@ export default function BaziPage() {
           </div>
         )}
 
-        {step === "result" && <BaziResult activeTab={activeTab} setActiveTab={setActiveTab} name={name} master={MASTERS.find((m) => m.id === master)!} price={pricing.bazi} onBack={() => { setStep("form"); payment.setIsPaid(); }} isPaid={payment.isPaid} isPending={payment.isPending} onUnlock={() => payment.initiatePayment()} />}
+        {step === "result" && baziChart && <BaziResult activeTab={activeTab} setActiveTab={setActiveTab} name={name} master={MASTERS.find((m) => m.id === master)!} price={pricing.bazi} bazi={baziChart} onBack={() => { setStep("form"); payment.setIsPaid(); }} isPaid={payment.isPaid} isPending={payment.isPending} onUnlock={() => payment.initiatePayment()} />}
 
       <PaymentModal
         open={payment.showPayment}
         onClose={() => payment.setShowPayment(false)}
         title="八字精批"
         amount={pricing.bazi}
-        description={`${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${MOCK_BAZI.data.day_master} · ${MOCK_BAZI.data.pattern}`}
+        description={`${MASTERS.find((m) => m.id === master)!.name}开示 · ${name} · ${baziChart ? `${baziChart.day_master}${baziChart.day_master_element} · ${baziChart.pattern}` : ""}`}
         onSuccess={handlePaymentSuccess}
         mode="qrcode"
       />
@@ -269,9 +286,14 @@ export default function BaziPage() {
   );
 }
 
-function BaziResult({ activeTab, setActiveTab, name, master, price, onBack, isPaid, isPending, onUnlock }: { activeTab: TabKey; setActiveTab: (t: TabKey) => void; name: string; master: typeof MASTERS[0]; price: string; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
-  const bazi = MOCK_BAZI.data;
+function BaziResult({ activeTab, setActiveTab, name, master, price, bazi, onBack, isPaid, isPending, onUnlock }: { activeTab: TabKey; setActiveTab: (t: TabKey) => void; name: string; master: typeof MASTERS[0]; price: string; bazi: BaziChart; onBack: () => void; isPaid: boolean; isPending: boolean; onUnlock: () => void }) {
   const analysis = MOCK_BAZI_ANALYSIS;
+  const dayMasterFull = `${bazi.day_master}${bazi.day_master_element}`;
+  const genderLabel = bazi.gender === "男" ? "乾造" : "坤造";
+
+  const wuxingDetail = parseFiveElements(bazi.five_elements);
+  const xiYongParsed = parseXiYong(bazi.xi_yong);
+  const jiShen = getRestrainingElement(bazi.day_master_element);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">
@@ -279,42 +301,37 @@ function BaziResult({ activeTab, setActiveTab, name, master, price, onBack, isPa
       <div className="rounded-2xl border border-gold/20 bg-gradient-to-b from-xuan-card to-xuan-surface p-5 text-center">
         <span className="text-3xl">{master.icon}</span>
         <p className="text-xs text-gold/60 mt-1">{master.name} · 开示</p>
-        <p className="text-xs text-gold/60 mt-2">{name} · {bazi.gender === "male" ? "乾造" : "坤造"}</p>
-        <p className="mt-1 font-display text-xl text-gold">{bazi.day_master} · {bazi.pattern} · {bazi.day_master_strength}</p>
+        <p className="text-xs text-gold/60 mt-2">{name} · {genderLabel}</p>
+        <p className="mt-1 font-display text-xl text-gold">{dayMasterFull} · {bazi.pattern} · {bazi.day_master_strength}</p>
         <p className="mt-1 text-xs text-paper-dark/60">{bazi.lunar_birthday}</p>
         <p className="mt-2 text-xs text-gold/40">依《渊海子平》《滴天髓》《三命通会》真排 · 非AI生成</p>
 
         {/* Four pillars */}
         <div className="mt-4 grid grid-cols-4 gap-2">
-          {[
-            { label: "年柱", gan: bazi.bazi.year.gan, zhi: bazi.bazi.year.zhi },
-            { label: "月柱", gan: bazi.bazi.month.gan, zhi: bazi.bazi.month.zhi },
-            { label: "日柱", gan: bazi.bazi.day.gan, zhi: bazi.bazi.day.zhi },
-            { label: "时柱", gan: bazi.bazi.hour.gan, zhi: bazi.bazi.hour.zhi },
-          ].map((pillar) => (
+          {bazi.pillars.map((pillar) => (
             <div key={pillar.label} className="rounded-lg border border-gold/15 bg-xuan-surface/60 p-2">
               <p className="text-xs text-gold/50">{pillar.label}</p>
-              <p className="font-display text-lg text-gold">{pillar.gan}{pillar.zhi}</p>
+              <p className="font-display text-lg text-gold">{pillar.gan_zhi}</p>
             </div>
           ))}
         </div>
 
         {/* Five elements */}
         <div className="mt-4 flex justify-center gap-3">
-          {bazi.wuxing_detail.map((wx) => (
+          {wuxingDetail.map((wx) => (
             <div key={wx.element} className="text-center">
               <p className="text-xs text-paper-dark/50">{wx.element}</p>
               <div className="mt-1 h-16 w-4 rounded-full bg-xuan-surface/60 mx-auto relative">
                 <div className="absolute bottom-0 w-full rounded-full bg-gold/40" style={{ height: `${wx.score}%` }} />
               </div>
-              <p className="mt-1 text-xs text-gold/60">{wx.description}</p>
+              <p className="mt-1 text-xs text-gold/60">{wx.count}</p>
             </div>
           ))}
         </div>
 
         <div className="mt-3 flex justify-center gap-4 text-xs">
-          <span className="text-emerald">用神：{bazi.yong_shen.join("、")}</span>
-          <span className="text-vermillion-light">忌神：{bazi.ji_shen.join("、")}</span>
+          <span className="text-emerald">{bazi.xi_yong}</span>
+          <span className="text-vermillion-light">忌{jiShen}</span>
         </div>
       </div>
 
@@ -334,33 +351,33 @@ function BaziResult({ activeTab, setActiveTab, name, master, price, onBack, isPa
           {activeTab === "chart" && (
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-gold/60 mb-2">当前大运</p>
-                <div className="rounded-lg border border-gold/15 bg-xuan/60 p-3">
-                  <p className="text-sm text-gold">{bazi.current_luck.pillar.gan}{bazi.current_luck.pillar.zhi} · {bazi.current_luck.age_range[0]}~{bazi.current_luck.age_range[1]}岁</p>
-                  <p className="text-xs text-paper-dark/70 mt-1">{bazi.current_luck.description}</p>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs text-gold/60 mb-2">2026流年</p>
-                <div className="rounded-lg border border-gold/15 bg-xuan/60 p-3">
-                  <p className="text-sm text-gold">{bazi.year_2026.title}</p>
-                  <p className="text-xs text-paper-dark/70 mt-1">{bazi.year_2026.summary}</p>
-                  <div className="mt-2 space-y-1">
-                    {bazi.year_2026.monthly.map((m) => (
-                      <p key={m.month} className="text-xs text-paper-dark/60"><span className="text-gold/60">{m.month}</span>：{m.outlook}</p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs text-gold/60 mb-2">神煞</p>
-                <div className="flex flex-wrap gap-2">
-                  {bazi.shen_sha.map((ss) => (
-                    <div key={ss.name} className="rounded-lg border border-gold/15 bg-xuan/60 px-3 py-2">
-                      <span className={`text-xs font-medium ${ss.omen === "吉" ? "text-emerald" : "text-vermillion-light"}`}>{ss.name}</span>
-                      <p className="text-xs text-paper-dark/50 mt-0.5">{ss.description}</p>
+                <p className="text-xs text-gold/60 mb-2">四柱详解</p>
+                <div className="space-y-2">
+                  {bazi.pillars.map((pillar) => (
+                    <div key={pillar.label} className="rounded-lg border border-gold/15 bg-xuan/60 p-3 flex items-center gap-3">
+                      <span className="text-xs text-gold/60 w-10 shrink-0">{pillar.label}</span>
+                      <span className="font-display text-lg text-gold">{pillar.gan_zhi}</span>
+                      <span className="text-xs text-paper-dark/50">{pillar.shi_shen || pillar.na_yin}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-gold/60 mb-2">五行力量</p>
+                <div className="rounded-lg border border-gold/15 bg-xuan/60 p-3">
+                  <p className="text-sm text-paper-dark">{bazi.five_elements}</p>
+                  <p className="text-xs text-paper-dark/60 mt-1">
+                    日主{dayMasterFull} · {bazi.day_master_strength} · {bazi.pattern}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-gold/60 mb-2">喜用神</p>
+                <div className="rounded-lg border border-gold/15 bg-xuan/60 p-3">
+                  <p className="text-sm text-paper-dark">{bazi.xi_yong}</p>
+                  <p className="text-xs text-paper-dark/50 mt-1">
+                    日主{bazi.day_master_strength === "身强" ? "强旺，喜克泄耗" : "衰弱，喜生扶助"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -377,10 +394,33 @@ function BaziResult({ activeTab, setActiveTab, name, master, price, onBack, isPa
 
       <div className="flex gap-3">
         <Button variant="secondary" className="flex-1" onClick={onBack}>重新排盘</Button>
-        <ShareButton title={`${master.name}开示 · ${name}的八字精批`} description={`${bazi.day_master} · ${bazi.pattern}`} className="flex-1" />
+        <ShareButton title={`${master.name}开示 · ${name}的八字精批`} description={`${dayMasterFull} · ${bazi.pattern}`} className="flex-1" />
       </div>
     </motion.div>
   );
+}
+
+function parseFiveElements(fiveElements: string) {
+  return fiveElements.split(" ").map((part) => {
+    const element = part.charAt(0);
+    const count = parseInt(part.slice(1)) || 0;
+    const score = Math.max(5, Math.min(100, Math.round((count / 8) * 100)));
+    return { element, count, score };
+  });
+}
+
+function parseXiYong(xiYong: string): { xi_shen: string[]; yong_shen: string[] } {
+  const xiMatch = xiYong.match(/喜(\S+)/);
+  const yongMatch = xiYong.match(/用(\S+)/);
+  return {
+    xi_shen: xiMatch ? [xiMatch[1]] : [],
+    yong_shen: yongMatch ? [yongMatch[1]] : [],
+  };
+}
+
+function getRestrainingElement(element: string): string {
+  const cycle: Record<string, string> = { 木: "金", 火: "水", 土: "木", 金: "火", 水: "土" };
+  return cycle[element] || "土";
 }
 
 function AnalysisSection({ title, segments, references }: { title: string; segments: string[]; references?: { book: string; chapter: string; quote: string }[] }) {

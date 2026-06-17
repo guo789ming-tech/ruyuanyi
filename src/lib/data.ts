@@ -5,104 +5,7 @@
 // 解梦：《周公解梦》《梦林玄解》敦煌本《梦书》
 // 手相：《麻衣神相》《神相全编》《柳庄神相》
 
-// ============ 功德 ============
-export const MOCK_MERIT = {
-  code: 0,
-  data: {
-    device_id: "web_abc123",
-    merit: 1280,
-    level: "功德主",
-    level_thresholds: { 善信: 0, 居士: 100, 行者: 500, 功德主: 1000, 大功德主: 5000 },
-    today_incense: 3,
-    max_incense_per_day: 3,
-    today_checkin: true,
-    today_woodfish: 56,
-    today_oracle_drawn: true,
-    recent_records: [
-      { action: "烧香", amount: 5, timestamp: "2026-06-12T08:30:00Z" },
-      { action: "签到", amount: 10, timestamp: "2026-06-12T00:01:00Z" },
-      { action: "抽签", amount: 5, timestamp: "2026-06-11T11:45:00Z" },
-    ],
-  },
-};
-
-export const MOCK_LEADERBOARD = {
-  code: 0,
-  data: {
-    total_users: 4521,
-    my_rank: 42,
-    entries: [
-      { rank: 1, nickname: "善***士", merit: 12800, level: "大功德主", badge: "gold" },
-      { rank: 2, nickname: "清***客", merit: 12130, level: "大功德主", badge: "gold" },
-      { rank: 3, nickname: "闻***居", merit: 10880, level: "功德主", badge: "silver" },
-      { rank: 4, nickname: "松***隐", merit: 9650, level: "功德主", badge: "bronze" },
-      { rank: 5, nickname: "静***心", merit: 9120, level: "功德主", badge: "bronze" },
-    ],
-  },
-};
-
-// ============ 八字精批 ============
-export const MOCK_BAZI = {
-  code: 0,
-  data: {
-    session_id: "bazi_calc_abc123",
-    bazi: {
-      year: { gan: "庚", zhi: "午" },
-      month: { gan: "辛", zhi: "巳" },
-      day: { gan: "丙", zhi: "寅" },
-      hour: { gan: "乙", zhi: "未" },
-    },
-    lunar_birthday: "庚午年四月廿一日未时",
-    gender: "male",
-    day_master: "丙火",
-    day_master_strength: "身强",
-    pattern: "正官格",
-    pattern_source: "《渊海子平》卷二·论格局：正官者，克身之谓也，以阴阳相配，刚柔相济为贵。",
-    wuxing: { 金: 1, 木: 2, 水: 0, 火: 3, 土: 2 },
-    wuxing_detail: [
-      { element: "金", count: 1, description: "偏弱", score: 25 },
-      { element: "木", count: 2, description: "适中", score: 55 },
-      { element: "水", count: 0, description: "极弱", score: 5 },
-      { element: "火", count: 3, description: "偏强", score: 75 },
-      { element: "土", count: 2, description: "适中", score: 45 },
-    ],
-    yong_shen: ["水", "木"],
-    ji_shen: ["火", "土"],
-    yong_shen_source: "《滴天髓》· 调候篇：丙火猛烈，欺霜侮雪，能锻庚金，逢辛反怯。得木则炽，遇水则济。",
-    shen_sha: [
-      { name: "天乙贵人", omen: "吉", description: "一生有贵人扶持，关键时刻往往有人相助。", source: "《三命通会》卷三·论天乙贵人" },
-      { name: "驿马", omen: "平", description: "动中生机，越是行动越能打开局面。", source: "《三命通会》卷三·论驿马" },
-      { name: "月德", omen: "吉", description: "心性厚道，容易得长辈与上司认可。", source: "《渊海子平》·论月德贵人" },
-    ],
-    luck_pillars: [
-      { age_range: [2, 11], pillar: { gan: "庚", zhi: "午" }, start_year: 1992, description: "幼年食神透出，学东西快，表现欲与好胜心明显。" },
-      { age_range: [12, 21], pillar: { gan: "己", zhi: "未" }, start_year: 2002, description: "少年伤官运，思维活跃但容易与权威顶撞，需要定性。" },
-      { age_range: [22, 31], pillar: { gan: "戊", zhi: "申" }, start_year: 2012, description: "偏财运渐起，人脉与机会增多，适合积累资源。" },
-      { age_range: [32, 41], pillar: { gan: "丁", zhi: "酉" }, start_year: 2022, description: "当前正财运，重在稳定经营、建立长期信用与口碑。" },
-      { age_range: [42, 51], pillar: { gan: "丙", zhi: "戌" }, start_year: 2032, description: "比肩运强调个人主导，适合做品牌与独立事业。" },
-    ],
-    luck_source: "《渊海子平》卷三·论大运：大运以月柱为基，阳男阴女顺行，阴男阳女逆行，十年一运，吉凶互见。",
-    current_luck: {
-      age_range: [32, 41],
-      pillar: { gan: "丁", zhi: "酉" },
-      start_year: 2022,
-      description: "当前正行正财运，越稳越旺，重契约、重结果、重声誉。",
-    },
-    year_2026: {
-      title: "丙午流年 · 比肩映官",
-      year: 2026,
-      summary: "2026 年整体偏忙，竞争环境增强，但若能借助制度、组织与专业能力，反而更容易树立口碑。",
-      monthly: [
-        { month: "正月", outlook: "起势快，适合确定年度目标与合作框架。" },
-        { month: "二月", outlook: "人际互动增多，注意沟通边界，避免情绪上头。" },
-        { month: "三月", outlook: "财运转稳，适合推进长期合同或固定收益事项。" },
-        { month: "四月", outlook: "工作压力明显，宜做减法，不宜盲目接盘。" },
-      ],
-    },
-    stream_source: "《穷通宝鉴》· 丙火四季调候：丙火生于夏月，火炎土燥，宜用水调候，金发水源。",
-  },
-};
-
+// ============ 八字精批分析（古籍引用文本） ============
 export const MOCK_BAZI_ANALYSIS = {
   personality: {
     segments: [
@@ -158,53 +61,6 @@ export const MOCK_BAZI_ANALYSIS = {
     references: [
       { book: "滴天髓", chapter: "疾病论", quote: "五行偏胜，贵在调剂。火炎水涸，当以滋阴降火为先。" },
       { book: "三命通会", chapter: "论疾病", quote: "五行和者，一世无灾。血气乱者，平生多疾。" },
-    ],
-  },
-};
-
-// ============ 六爻占卜 ============
-export const MOCK_DIVINATION = {
-  code: 0,
-  data: {
-    hexagram_id: "div_xyz789",
-    session_id: "div_xyz789",
-    method: "纳甲筮法",
-    method_source: "《卜筮正宗》卷一·凡例：以钱代蓍，三掷成爻，六爻成卦，纳甲配世应，乃京房遗法也。",
-    lines: [
-      { position: 1, type: "yang", changing: false, display: "━━━━━", liu_qin: "父母", liu_shou: "青龙" },
-      { position: 2, type: "yin", changing: false, display: "━━ ━━", liu_qin: "官鬼", liu_shou: "朱雀" },
-      { position: 3, type: "yang", changing: true, display: "━━━━━", liu_qin: "妻财", liu_shou: "勾陈" },
-      { position: 4, type: "yin", changing: false, display: "━━ ━━", liu_qin: "兄弟", liu_shou: "腾蛇" },
-      { position: 5, type: "yang", changing: false, display: "━━━━━", liu_qin: "子孙", liu_shou: "白虎" },
-      { position: 6, type: "yang", changing: false, display: "━━━━━", liu_qin: "妻财", liu_shou: "玄武" },
-    ],
-    shi_yao: 3,
-    ying_yao: 6,
-    original_hexagram: {
-      name: "乾为天", unicode: "䷀",
-      bagua_up: { name: "乾", element: "金", nature: "天" },
-      bagua_down: { name: "乾", element: "金", nature: "天" },
-    },
-    changed_hexagram: {
-      name: "天风姤", unicode: "䷫",
-      bagua_up: { name: "乾", element: "金", nature: "天" },
-      bagua_down: { name: "巽", element: "木", nature: "风" },
-    },
-    changing_line: 3,
-    changing_line_text: "九三：君子终日乾乾，夕惕若厉，无咎。",
-    judgment: "乾：元亨利贞。",
-  },
-  interpretation: {
-    segments: [
-      "此卦本卦为乾，象征主动、进取、开创。问跳槽之事，说明你本身有向上之心，也具备冲劲与执行力。",
-      "三爻妻财发动，临勾陈，落在「终日乾乾，夕惕若厉，无咎」，核心不是不能动，而是提醒你越到关键时刻越要谨慎。机会有，但不能只凭热情出手。",
-      "变卦为姤，乾上巽下，天在上而风在下，象征相遇与突发。新机会多半来得快、看起来诱人，但你需要先看清对方真实条件、团队节奏与后续空间，再决定是否定局。",
-    ],
-    references: [
-      { book: "周易", chapter: "乾卦", quote: "九三：君子终日乾乾，夕惕若厉，无咎。" },
-      { book: "增删卜易", chapter: "求财章", quote: "凡占求财，先看财爻。财爻旺相，得日月生扶者，其财必得。" },
-      { book: "卜筮正宗", chapter: "六亲章", quote: "妻财爻动，须防兄弟克之。财动化回头克，先得后失。" },
-      { book: "火珠林", chapter: "纳甲法", quote: "乾纳甲壬，坤纳乙癸，六子各有所配，以成八卦之变。" },
     ],
   },
 };
@@ -282,55 +138,241 @@ export const DREAM_CATEGORIES = [
   { id: "action", name: "行为举止", icon: "🏃", description: "梦飞行、坠落、溺水、哭泣" },
 ];
 
-export const MOCK_DREAM = (keyword: string) => ({
-  code: 0,
-  data: {
-    keyword,
-    interpretation: getDreamInterpretation(keyword),
-    source: {
-      primary: "《周公解梦》",
-      secondary: ["敦煌本《梦书》", "《梦林玄解》"],
+export function interpretDream(keyword: string) {
+  return {
+    code: 0,
+    data: {
+      keyword,
+      interpretation: getDreamInterpretation(keyword),
+      source: {
+        primary: "《周公解梦》",
+        secondary: ["敦煌本《梦书》", "《梦林玄解》"],
+      },
     },
-  },
-});
+  };
+}
 
 function getDreamInterpretation(keyword: string) {
-  const interpretations: Record<string, { ji: string; text: string; source: string }[]> = {
+  const dict: Record<string, { ji: string; text: string; source: string }[]> = {
     default: [
       { ji: "吉", text: "梦者心之所发也，日有所思，夜有所梦。梦境乃内心之映照，不必过度解读。", source: "《周公解梦》·总论" },
       { ji: "平", text: "《梦林玄解》云：梦乃魂之所游，五脏之气感于外，形于梦寐之间。", source: "《梦林玄解》·卷一" },
     ],
-    水: [
-      { ji: "吉", text: "梦见大水者，主财。水为财源之象，大江大河入梦，财富将至。", source: "《周公解梦》·地理篇" },
-      { ji: "平", text: "敦煌本《梦书》：梦水澄清者吉，浑浊者凶。清水主智慧清明，浊水主烦恼纠缠。", source: "敦煌本《梦书》" },
+    // ---- 天文气象 ----
+    日: [
+      { ji: "吉", text: "梦日出东方者，主前程光明，万事更新。日光入怀，主生贵子。", source: "《周公解梦》·天象篇" },
+    ],
+    月: [
+      { ji: "吉", text: "梦月明如昼者，主婚姻美满，家道兴隆。月入怀者，主生贤女。", source: "《周公解梦》·天象篇" },
+      { ji: "凶", text: "梦月坠暗昧者，主母有疾或家中有忧。", source: "《梦林玄解》·卷一" },
+    ],
+    星: [
+      { ji: "吉", text: "梦星斗灿烂者，主名声远播，文采出众。", source: "《周公解梦》·天象篇" },
+    ],
+    风: [
+      { ji: "平", text: "梦清风拂面者，主有佳音自远方来。春风入梦，好事将近。", source: "《周公解梦》·天象篇" },
+      { ji: "凶", text: "梦狂风折木者，恐有口舌争斗之事，宜谨慎行事。", source: "《梦林玄解》·卷二" },
+    ],
+    雨: [
+      { ji: "吉", text: "梦微雨沾衣者，主恩泽将至，所求必遂。", source: "《周公解梦》·天象篇" },
+      { ji: "平", text: "梦暴雨倾盆者，主情绪激荡，宜守静勿躁。", source: "敦煌本《梦书》" },
+    ],
+    雪: [
+      { ji: "吉", text: "梦雪落身上者，主白事可成，烦恼消散。", source: "《周公解梦》·天象篇" },
+    ],
+    雷: [
+      { ji: "平", text: "梦闻雷声者，主有意外之变。雷声大而无雨者，虚惊一场。", source: "《梦林玄解》·卷一" },
+    ],
+    云: [
+      { ji: "吉", text: "梦白云出岫者，主志气高逸，将有机缘自远方来。", source: "《周公解梦》·天象篇" },
+    ],
+    // ---- 飞禽走兽 ----
+    龙: [
+      { ji: "吉", text: "梦见龙者，主大贵之兆。龙为四灵之首，见之大吉。", source: "《周公解梦》·走兽篇" },
+      { ji: "吉", text: "梦乘龙上天者，主仕途亨通，平步青云。", source: "《梦林玄解》·卷三" },
     ],
     蛇: [
       { ji: "吉", text: "梦蛇入怀者，主生贵子。蛇为小龙，有祥瑞之意。", source: "《周公解梦》·走兽篇" },
       { ji: "平", text: "《梦林玄解》：蛇缠身者，有口舌之争；蛇去者，灾消祸散。", source: "《梦林玄解》·卷三" },
     ],
-    火: [
-      { ji: "吉", text: "梦见大火者，主名声显赫，事业兴旺。火焰高升，仕途光明。", source: "《周公解梦》·天象篇" },
-      { ji: "凶", text: "梦火烧房屋者，恐有口舌是非，须谨言慎行，低调行事。", source: "《梦林玄解》·卷二" },
+    虎: [
+      { ji: "平", text: "梦虎啸山林者，主有贵人将现。虎虽猛兽，在梦则为威权之象。", source: "《周公解梦》·走兽篇" },
+      { ji: "凶", text: "梦虎噬人者，恐有小人暗算或意外之险。", source: "《梦林玄解》·卷三" },
     ],
-    飞: [
-      { ji: "吉", text: "梦见身能飞腾者，主志气高远，将有升迁之喜。", source: "《周公解梦》·人事篇" },
-      { ji: "平", text: "《梦林玄解》：梦飞而不稳者，心有不安，欲脱困境而未得。", source: "《梦林玄解》·卷五" },
+    马: [
+      { ji: "吉", text: "梦骑马驰骋者，主事业顺遂，一马平川。", source: "《周公解梦》·走兽篇" },
+      { ji: "平", text: "梦失马者，暂有小失，然塞翁失马焉知非福。", source: "敦煌本《梦书》" },
+    ],
+    牛: [
+      { ji: "吉", text: "梦牛耕田者，主勤劳致富，根基稳固。牛为农耕之本，梦之安稳。", source: "《周公解梦》·走兽篇" },
+    ],
+    羊: [
+      { ji: "吉", text: "梦羊者，祥也。「羊」通「祥」，见羊主吉事临门。", source: "《周公解梦》·走兽篇" },
+    ],
+    鸡: [
+      { ji: "吉", text: "梦鸡鸣者，主声名将起。雄鸡一唱天下白，新机遇在望。", source: "《周公解梦》·家禽篇" },
+    ],
+    狗: [
+      { ji: "平", text: "梦狗吠者，主有他人议论。犬守门庭，梦之提醒留心周围人事。", source: "《周公解梦》·走兽篇" },
+      { ji: "凶", text: "梦恶犬伤人，恐有口舌是非或友人反目。", source: "《梦林玄解》·卷三" },
+    ],
+    猫: [
+      { ji: "平", text: "梦猫者，主有小人是非。猫性狡黠，宜留心暗处之事。", source: "《梦林玄解》·卷三" },
+    ],
+    鼠: [
+      { ji: "平", text: "梦鼠啮物者，主财物损耗，宜防小失。鼠咬衣物，慎防破财。", source: "《周公解梦》·走兽篇" },
+    ],
+    兔: [
+      { ji: "吉", text: "梦白兔者，主阴德福报将至。兔为月精，见之吉祥。", source: "《梦林玄解》·卷三" },
+    ],
+    鹤: [
+      { ji: "吉", text: "梦仙鹤来仪者，主长寿延年，福泽绵长。", source: "《周公解梦》·走兽篇" },
+    ],
+    龟: [
+      { ji: "吉", text: "梦龟者，主长寿且家宅安稳。龟为玄武，镇宅之神。", source: "《周公解梦》·走兽篇" },
+    ],
+    蜘蛛: [
+      { ji: "吉", text: "梦蜘蛛者，主有喜事临门。蛛丝垂檐，喜从天降。", source: "《周公解梦》·虫类篇" },
+    ],
+    // ---- 地理山水 ----
+    山: [
+      { ji: "吉", text: "梦登高山者，主志向远大，前程可期。", source: "《周公解梦》·地理篇" },
+      { ji: "平", text: "梦山崩者，主事业有变，然毁后更易重建。", source: "《梦林玄解》·卷二" },
+    ],
+    水: [
+      { ji: "吉", text: "梦见大水者，主财。水为财源之象，大江大河入梦，财富将至。", source: "《周公解梦》·地理篇" },
+      { ji: "平", text: "敦煌本《梦书》：梦水澄清者吉，浑浊者凶。清水主智慧清明，浊水主烦恼纠缠。", source: "敦煌本《梦书》" },
+    ],
+    河: [
+      { ji: "吉", text: "梦涉大河而过者，主困难将渡，好事多磨而终成。", source: "《周公解梦》·地理篇" },
+    ],
+    海: [
+      { ji: "吉", text: "梦见大海浩瀚者，主心胸开阔，将有大气象。", source: "《周公解梦》·地理篇" },
+    ],
+    // ---- 人物人伦 ----
+    鬼: [
+      { ji: "平", text: "梦鬼者，非真鬼魅，乃是心中忧惧所化。多因压力积聚，宜释放心神。", source: "《梦林玄解》·卷四" },
+      { ji: "平", text: "梦与鬼语者，主有隐秘之事将明。", source: "敦煌本《梦书》" },
+    ],
+    死人: [
+      { ji: "平", text: "梦故去之人者，多为思念所致，非凶兆。若梦中其人言笑如生，主家中安宁。", source: "《梦林玄解》·卷四" },
+      { ji: "凶", text: "梦死人哭者，恐家中有口舌或不睦之事。", source: "《周公解梦》·人事篇" },
+    ],
+    佛: [
+      { ji: "吉", text: "梦见佛菩萨者，大吉之兆，主消灾延寿，善缘深厚。", source: "《梦林玄解》·卷四" },
+    ],
+    神: [
+      { ji: "吉", text: "梦神明降临者，主有贵人暗中护佑，大事可成。", source: "《周公解梦》·神异篇" },
+    ],
+    结婚: [
+      { ji: "吉", text: "梦己结婚者，主喜事将近，姻缘和合。", source: "《周公解梦》·人事篇" },
+    ],
+    // ---- 身体发肤 ----
+    头发: [
+      { ji: "吉", text: "梦头发秀美者，主精神焕发，运势上扬。", source: "《周公解梦》·身体篇" },
+      { ji: "凶", text: "梦发白或发落者，主多思多虑伤神，宜保养身心。", source: "《梦林玄解》·卷五" },
     ],
     牙: [
       { ji: "凶", text: "梦见牙齿脱落者，恐有骨肉分离之忧。上齿主长辈，下齿主晚辈。", source: "《周公解梦》·身体篇" },
       { ji: "平", text: "敦煌本《梦书》：梦齿落而血出者凶，不血出者无碍，主虚惊一场。", source: "敦煌本《梦书》" },
     ],
+    眼睛: [
+      { ji: "吉", text: "梦目明如炬者，主智慧开显，能看透事物本质。", source: "《周公解梦》·身体篇" },
+    ],
+    血: [
+      { ji: "吉", text: "梦血者，主财。血为生命之源，梦之往往与财运相关。", source: "《周公解梦》·身体篇" },
+      { ji: "凶", text: "梦吐血者，恐有破财或口舌纠纷。", source: "《梦林玄解》·卷五" },
+    ],
+    手: [
+      { ji: "吉", text: "梦双手有力者，主事业能掌控，有所作为。", source: "《周公解梦》·身体篇" },
+    ],
+    脚: [
+      { ji: "吉", text: "梦脚步稳健者，主人生根基牢固，步步为营。", source: "《周公解梦》·身体篇" },
+    ],
+    // ---- 行为举止 ----
+    飞: [
+      { ji: "吉", text: "梦见身能飞腾者，主志气高远，将有升迁之喜。", source: "《周公解梦》·人事篇" },
+      { ji: "平", text: "《梦林玄解》：梦飞而不稳者，心有不安，欲脱困境而未得。", source: "《梦林玄解》·卷五" },
+    ],
+    坠落: [
+      { ji: "平", text: "梦从高处坠落者，主心有不安或压力过大。此为常见梦，不必过虑。", source: "《梦林玄解》·卷五" },
+    ],
+    哭: [
+      { ji: "吉", text: "梦哭泣者，反主有喜事将临。泪落解千愁，哭过之后心境转晴。", source: "《周公解梦》·人事篇" },
+    ],
+    笑: [
+      { ji: "吉", text: "梦欢笑者，主心情愉悦，人际和谐，近期顺遂。", source: "《周公解梦》·人事篇" },
+    ],
+    跑: [
+      { ji: "平", text: "梦奔跑者，主心有所趋或有所避。跑而轻快者吉，跑而沉重者有压力。", source: "《梦林玄解》·卷五" },
+    ],
+    游泳: [
+      { ji: "吉", text: "梦水中游泳者，主情绪舒畅，能从容应对当前局面。", source: "《周公解梦》·人事篇" },
+    ],
+    打架: [
+      { ji: "平", text: "梦与人争斗者，主内心有矛盾冲突。不一定是坏事，或为解决问题之前兆。", source: "《梦林玄解》·卷五" },
+    ],
+    吃饭: [
+      { ji: "吉", text: "梦饮食者，主福禄将至。食为养命之源，梦之安稳。", source: "《周公解梦》·人事篇" },
+    ],
+    // ---- 器物用具 ----
+    火: [
+      { ji: "吉", text: "梦见大火者，主名声显赫，事业兴旺。火焰高升，仕途光明。", source: "《周公解梦》·天象篇" },
+      { ji: "凶", text: "梦火烧房屋者，恐有口舌是非，须谨言慎行，低调行事。", source: "《梦林玄解》·卷二" },
+    ],
     鱼: [
       { ji: "吉", text: "梦见大鱼者，主得财。鱼为富足之象，越大则财越多。", source: "《周公解梦》·器物篇" },
       { ji: "吉", text: "《梦林玄解》：梦捕鱼得之者，所求必获。梦鱼跃出水面，佳音将至。", source: "《梦林玄解》·卷四" },
     ],
+    钱: [
+      { ji: "吉", text: "梦得钱财者，主有意外收获。然亦提醒：君子爱财，取之有道。", source: "《周公解梦》·器物篇" },
+      { ji: "凶", text: "梦失钱财者，须防小耗，投资理财宜谨慎。", source: "《梦林玄解》·卷四" },
+    ],
+    金: [
+      { ji: "吉", text: "梦见金银者，主财运亨通。金光耀目，富贵可期。", source: "《周公解梦》·器物篇" },
+    ],
+    衣服: [
+      { ji: "吉", text: "梦新衣者，主气象更新，运程将有变化。", source: "《周公解梦》·器物篇" },
+    ],
+    鞋: [
+      { ji: "平", text: "梦失鞋者，主前行之路有阻，宜暂缓脚步。", source: "《周公解梦》·器物篇" },
+    ],
+    镜子: [
+      { ji: "平", text: "梦照镜者，主自省自查，是内心成长之相。", source: "《梦林玄解》·卷四" },
+    ],
+    门: [
+      { ji: "吉", text: "梦门开者，主新机会将至，敞开心扉迎接变化。", source: "《周公解梦》·屋宇篇" },
+      { ji: "凶", text: "梦门闭不能入者，主当前有阻碍，宜另寻门路。", source: "《梦林玄解》·卷二" },
+    ],
+    桥: [
+      { ji: "吉", text: "梦过桥者，主将渡过难关，抵达彼岸。", source: "《周公解梦》·地理篇" },
+    ],
+    // ---- 屋宇宫室 ----
+    房子: [
+      { ji: "吉", text: "梦新屋落成者，主家业兴旺，根基稳固。", source: "《周公解梦》·屋宇篇" },
+      { ji: "凶", text: "梦屋塌者，恐家中有变故，宜多关心家人。", source: "《梦林玄解》·卷二" },
+    ],
+    // ---- 植物 ----
+    花: [
+      { ji: "吉", text: "梦花开满园者，主好事将近，姻缘或事业将开花结果。", source: "《周公解梦》·植物篇" },
+      { ji: "平", text: "梦花谢者，提醒珍惜当下美好时光。", source: "《梦林玄解》·卷六" },
+    ],
+    树: [
+      { ji: "吉", text: "梦大树参天者，主根基深厚，长辈荫护。", source: "《周公解梦》·植物篇" },
+    ],
+    竹子: [
+      { ji: "吉", text: "梦竹者，竹有节而中空，主节节高升、虚怀若谷。", source: "《梦林玄解》·卷六" },
+    ],
+    // ---- 考试 ----
+    考试: [
+      { ji: "平", text: "梦考试者，多为现实压力之映照。梦中考试不顺非真不顺，宜放平心态。", source: "《梦林玄解》·卷五" },
+    ],
   };
 
-  // Find matching keywords
-  for (const [k, v] of Object.entries(interpretations)) {
+  for (const [k, v] of Object.entries(dict)) {
     if (keyword.includes(k)) return v;
   }
-  return interpretations.default;
+  return dict.default;
 }
 
 // ============ 手相（参考麻衣神相） ============
@@ -838,50 +880,6 @@ export function getNamingResults(params: {
     },
   };
 }
-
-// ============ 今日黄历 ============
-export const MOCK_ALMANAC = {
-  code: 0,
-  data: {
-    solar_date: "2026年6月12日",
-    lunar_date: "丙午年四月廿七日",
-    lunar_year: "丙午",
-    lunar_month: "四月",
-    lunar_day: "廿七",
-    gan_zhi: {
-      year: "丙午", month: "癸巳", day: "壬戌",
-      year_element: "火", month_element: "水", day_element: "水",
-    },
-    zodiac_day: "狗",
-    zodiac_clash: "龙",
-    clash_direction: "正北",
-    gods: {
-      xi_shen: "正南",
-      fu_shen: "东南",
-      cai_shen: "正东",
-    },
-    yi: ["祭祀", "祈福", "求嗣", "开光", "出行", "解除", "嫁娶", "纳采", "订盟", "入宅", "安床", "动土", "上梁"],
-    ji: ["开市", "交易", "作灶", "安葬", "行丧"],
-    tai_shen: "占门碓外东南",
-    peng_zu: "壬不汲水更难防，戌不吃犬作怪上床",
-    shi_chen: [
-      { time: "子时 23:00-01:00", gan_zhi: "庚子", ji_xiong: "凶", description: "天刑，不遇" },
-      { time: "丑时 01:00-03:00", gan_zhi: "辛丑", ji_xiong: "凶", description: "朱雀，不遇" },
-      { time: "寅时 03:00-05:00", gan_zhi: "壬寅", ji_xiong: "吉", description: "金匮，时德" },
-      { time: "卯时 05:00-07:00", gan_zhi: "癸卯", ji_xiong: "吉", description: "天德，玉堂" },
-      { time: "辰时 07:00-09:00", gan_zhi: "甲辰", ji_xiong: "凶", description: "白虎，日煞" },
-      { time: "巳时 09:00-11:00", gan_zhi: "乙巳", ji_xiong: "吉", description: "明堂，续世" },
-      { time: "午时 11:00-13:00", gan_zhi: "丙午", ji_xiong: "平", description: "天刑，路空" },
-      { time: "未时 13:00-15:00", gan_zhi: "丁未", ji_xiong: "吉", description: "玉堂，贵人" },
-      { time: "申时 15:00-17:00", gan_zhi: "戊申", ji_xiong: "凶", description: "天牢，六戊" },
-      { time: "酉时 17:00-19:00", gan_zhi: "己酉", ji_xiong: "平", description: "玄武，不遇" },
-      { time: "戌时 19:00-21:00", gan_zhi: "庚戌", ji_xiong: "凶", description: "司命，日破" },
-      { time: "亥时 21:00-23:00", gan_zhi: "辛亥", ji_xiong: "吉", description: "勾陈，福星" },
-    ],
-    source: "《协纪辨方书》《玉匣记》",
-  },
-};
-
 
 // ============ 禅修 ============
 export const MEDITATION_TRACKS = [
