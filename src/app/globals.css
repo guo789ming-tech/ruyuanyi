@@ -264,36 +264,36 @@ input::placeholder, textarea::placeholder {
 .incense-smoke .smoke-wisp {
   position: absolute;
   bottom: 10%;
-  width: 60px;
-  height: 80px;
-  background: radial-gradient(ellipse at center, rgba(212, 168, 83, 0.15) 0%, transparent 70%);
+  width: 80px;
+  height: 120px;
+  background: radial-gradient(ellipse at center, rgba(212, 168, 83, 0.35) 0%, transparent 70%);
   border-radius: 50%;
-  filter: blur(12px);
-  animation: incense-rise 6s ease-out infinite, incense-drift 8s ease-in-out infinite;
+  filter: blur(16px);
+  animation: incense-rise 7s ease-out infinite, incense-drift 10s ease-in-out infinite;
 }
-.incense-smoke .smoke-wisp:nth-child(1) { left: 15%; animation-delay: 0s, 0s; }
-.incense-smoke .smoke-wisp:nth-child(2) { left: 40%; animation-delay: 2s, 1s; width: 50px; height: 70px; }
-.incense-smoke .smoke-wisp:nth-child(3) { left: 65%; animation-delay: 4s, 0.5s; width: 70px; height: 90px; }
-.incense-smoke .smoke-wisp:nth-child(4) { left: 80%; animation-delay: 1s, 2s; width: 45px; height: 65px; }
-.incense-smoke .smoke-wisp:nth-child(5) { left: 25%; animation-delay: 5s, 3s; width: 55px; height: 75px; }
+.incense-smoke .smoke-wisp:nth-child(1) { left: 12%; animation-delay: 0s, 0s; }
+.incense-smoke .smoke-wisp:nth-child(2) { left: 38%; animation-delay: 2.3s, 1s; width: 65px; height: 100px; }
+.incense-smoke .smoke-wisp:nth-child(3) { left: 62%; animation-delay: 4.6s, 0.5s; width: 90px; height: 130px; }
+.incense-smoke .smoke-wisp:nth-child(4) { left: 82%; animation-delay: 1s, 2s; width: 55px; height: 90px; }
+.incense-smoke .smoke-wisp:nth-child(5) { left: 22%; animation-delay: 5.5s, 3s; width: 70px; height: 100px; }
 
 /* Cloud decoration */
 .temple-cloud {
   position: absolute;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.3;
+  opacity: 0.5;
 }
 .temple-cloud::before {
   content: "";
   display: block;
-  width: 120px;
-  height: 40px;
-  background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(212, 168, 83, 0.3) 0%, transparent 60%),
-              radial-gradient(ellipse 60% 80% at 50% 40%, rgba(212, 168, 83, 0.25) 0%, transparent 60%),
-              radial-gradient(ellipse 50% 70% at 80% 50%, rgba(212, 168, 83, 0.2) 0%, transparent 60%);
+  width: 160px;
+  height: 50px;
+  background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(212, 168, 83, 0.4) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 80% at 50% 40%, rgba(212, 168, 83, 0.35) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 70% at 80% 50%, rgba(212, 168, 83, 0.3) 0%, transparent 60%);
   border-radius: 50%;
-  filter: blur(2px);
+  filter: blur(3px);
   animation: cloud-float 8s ease-in-out infinite;
 }
 .temple-cloud.slow::before {
@@ -305,7 +305,7 @@ input::placeholder, textarea::placeholder {
   position: relative;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.3) 15%, rgba(212, 168, 83, 0.5) 50%, rgba(212, 168, 83, 0.3) 85%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.5) 15%, rgba(212, 168, 83, 0.7) 50%, rgba(212, 168, 83, 0.5) 85%, transparent);
   margin-bottom: 0;
 }
 .temple-top::after {
@@ -315,7 +315,7 @@ input::placeholder, textarea::placeholder {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.15) 20%, rgba(212, 168, 83, 0.3) 50%, rgba(212, 168, 83, 0.15) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.25) 20%, rgba(212, 168, 83, 0.4) 50%, rgba(212, 168, 83, 0.25) 80%, transparent);
 }
 
 /* Warm ambient glow overlay */
@@ -324,9 +324,9 @@ input::placeholder, textarea::placeholder {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: min(600px, 100vw);
-  height: 300px;
-  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212, 168, 83, 0.08) 0%, transparent 70%);
+  width: min(700px, 100vw);
+  height: 350px;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212, 168, 83, 0.15) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
   animation: ambient-glow 6s ease-in-out infinite;
