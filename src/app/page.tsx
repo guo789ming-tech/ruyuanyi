@@ -46,20 +46,40 @@ const ANCIENT_BOOKS = ["渊海子平", "三命通会", "滴天髓", "穷通宝�
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-20">
+      {/* Temple top decoration */}
+      <div className="temple-top" />
+
       {/* ===== Hero ===== */}
-      <section className="flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center gap-6 px-2 text-center md:min-h-[calc(100vh-3.5rem)]">
+      <section className="relative flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center gap-6 px-2 text-center md:min-h-[calc(100vh-3.5rem)]">
+        {/* Ambient glow */}
+        <div className="ambient-glow-top" />
+
+        {/* Incense smoke */}
+        <div className="incense-smoke">
+          <div className="smoke-wisp" />
+          <div className="smoke-wisp" />
+          <div className="smoke-wisp" />
+          <div className="smoke-wisp" />
+          <div className="smoke-wisp" />
+        </div>
+
+        {/* Clouds */}
+        <div className="temple-cloud" style={{ top: "8%", left: "5%" }} />
+        <div className="temple-cloud slow" style={{ top: "15%", right: "3%" }} />
+        <div className="temple-cloud" style={{ top: "60%", left: "2%" }} />
+
         <ScrollReveal>
           <motion.div
             animate={{ scale: [1, 1.03, 1] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="relative mx-auto flex size-20 items-center justify-center rounded-full border border-gold/30 bg-gold/10 text-gold shadow-[0_0_30px_-5px_rgba(201,160,92,0.15)]"
+            className="relative z-10 mx-auto flex size-20 items-center justify-center rounded-full border border-gold/30 bg-gold/10 text-gold shadow-[0_0_30px_-5px_rgba(201,160,92,0.15)]"
           >
             <BodhiLeaf className="size-11 drop-shadow-[0_0_10px_rgba(201,160,92,0.4)]" />
           </motion.div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15}>
-          <div className="space-y-5">
+          <div className="relative z-10 space-y-5">
             <h1 className="font-display text-5xl tracking-[0.25em] text-gold sm:text-6xl">如 愿 禅 苑</h1>
             <p className="text-base leading-loose text-paper-dark/80 sm:text-lg">以古籍为根，以师父为引</p>
             <p className="text-base text-paper-dark/60">为家人祈福 · 求灵签 · 看八字</p>
@@ -67,7 +87,7 @@ export default function HomePage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>
-          <div className="flex w-full flex-col gap-3 px-4 sm:w-auto sm:flex-row sm:px-0">
+          <div className="relative z-10 flex w-full flex-col gap-3 px-4 sm:w-auto sm:flex-row sm:px-0">
             <Link href="/blessing">
               <motion.button
                 whileHover={{ scale: 1.03 }}
@@ -90,7 +110,7 @@ export default function HomePage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.5}>
-          <p className="text-sm text-gold/40 animate-bounce mt-4">向下滚动 · 看更多功德</p>
+          <p className="relative z-10 text-sm text-gold/40 animate-bounce mt-4">向下滚动 · 看更多功德</p>
         </ScrollReveal>
       </section>
 

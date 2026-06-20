@@ -123,12 +123,55 @@
   100% { transform: translateY(-40px) scale(0); opacity: 0; }
 }
 
+/* ===== Temple Atmosphere Keyframes ===== */
+
+/* Incense smoke rising */
+@keyframes incense-rise {
+  0% { transform: translateY(0) scaleX(0.8); opacity: 0; }
+  10% { opacity: 0.25; }
+  50% { opacity: 0.15; }
+  90% { opacity: 0.05; }
+  100% { transform: translateY(-120px) scaleX(2); opacity: 0; }
+}
+
+@keyframes incense-drift {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(15px); }
+  50% { transform: translateX(-8px); }
+  75% { transform: translateX(-20px); }
+  100% { transform: translateX(5px); }
+}
+
+/* Cloud drift */
+@keyframes cloud-float {
+  0% { transform: translateX(0) translateY(0); opacity: 0.3; }
+  50% { transform: translateX(8px) translateY(-6px); opacity: 0.5; }
+  100% { transform: translateX(0) translateY(0); opacity: 0.3; }
+}
+
+@keyframes cloud-float-slow {
+  0% { transform: translateX(0); opacity: 0.2; }
+  50% { transform: translateX(-12px); opacity: 0.35; }
+  100% { transform: translateX(0); opacity: 0.2; }
+}
+
+/* Ambient candlelight pulse */
+@keyframes ambient-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+
 html {
   font-size: 18px;
 }
 
 body {
   background-color: #1E1812;
+  background-image:
+    /* Vignette: warm glow at top */
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212, 168, 83, 0.06) 0%, transparent 70%),
+    /* Paper texture */
+    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   color: #F7F2E8;
   font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -154,9 +197,34 @@ input::placeholder, textarea::placeholder {
 
 /* ===== Custom Utilities ===== */
 
-/* Gold divider line */
+/* Gold divider — 回纹 (key fret) inspired */
 .gold-divider {
-  @apply mx-auto w-12 border-t border-gold/15;
+  @apply mx-auto;
+  height: 12px;
+  border: none;
+  width: min(200px, 60vw);
+  position: relative;
+  background:
+    radial-gradient(circle, rgba(212, 168, 83, 0.5) 1.2px, transparent 1.2px);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+}
+.gold-divider::before,
+.gold-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 1px;
+  width: calc(50% - 8px);
+}
+.gold-divider::before {
+  left: 0;
+  background: linear-gradient(to right, transparent, rgba(212, 168, 83, 0.35));
+}
+.gold-divider::after {
+  right: 0;
+  background: linear-gradient(to left, transparent, rgba(212, 168, 83, 0.35));
 }
 
 /* Paper-warm highlighted section */
@@ -181,6 +249,87 @@ input::placeholder, textarea::placeholder {
 
 .card-feature:hover {
   box-shadow: 0 0 30px -5px rgba(212, 168, 83, 0.15);
+}
+
+/* ===== Temple Atmosphere Elements ===== */
+
+/* Incense smoke container */
+.incense-smoke {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.incense-smoke .smoke-wisp {
+  position: absolute;
+  bottom: 10%;
+  width: 60px;
+  height: 80px;
+  background: radial-gradient(ellipse at center, rgba(212, 168, 83, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(12px);
+  animation: incense-rise 6s ease-out infinite, incense-drift 8s ease-in-out infinite;
+}
+.incense-smoke .smoke-wisp:nth-child(1) { left: 15%; animation-delay: 0s, 0s; }
+.incense-smoke .smoke-wisp:nth-child(2) { left: 40%; animation-delay: 2s, 1s; width: 50px; height: 70px; }
+.incense-smoke .smoke-wisp:nth-child(3) { left: 65%; animation-delay: 4s, 0.5s; width: 70px; height: 90px; }
+.incense-smoke .smoke-wisp:nth-child(4) { left: 80%; animation-delay: 1s, 2s; width: 45px; height: 65px; }
+.incense-smoke .smoke-wisp:nth-child(5) { left: 25%; animation-delay: 5s, 3s; width: 55px; height: 75px; }
+
+/* Cloud decoration */
+.temple-cloud {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+}
+.temple-cloud::before {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 40px;
+  background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(212, 168, 83, 0.3) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 80% at 50% 40%, rgba(212, 168, 83, 0.25) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 70% at 80% 50%, rgba(212, 168, 83, 0.2) 0%, transparent 60%);
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: cloud-float 8s ease-in-out infinite;
+}
+.temple-cloud.slow::before {
+  animation: cloud-float-slow 12s ease-in-out infinite;
+}
+
+/* Top temple-roof decoration */
+.temple-top {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.3) 15%, rgba(212, 168, 83, 0.5) 50%, rgba(212, 168, 83, 0.3) 85%, transparent);
+  margin-bottom: 0;
+}
+.temple-top::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.15) 20%, rgba(212, 168, 83, 0.3) 50%, rgba(212, 168, 83, 0.15) 80%, transparent);
+}
+
+/* Warm ambient glow overlay */
+.ambient-glow-top {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, 100vw);
+  height: 300px;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212, 168, 83, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambient-glow 6s ease-in-out infinite;
 }
 
 /* Shadow variants */
