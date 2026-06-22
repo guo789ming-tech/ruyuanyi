@@ -66,7 +66,7 @@ function desensitizeName(name: string): string {
   if (!name) return "***";
   if (name.length <= 1) return "*";
   if (name.length === 2) return name[0] + "*";
-  if (name.length === 3) return name[0] + "*" + name[2];
+  if (name.length === 3) return name[0] + "**";
   return name[0] + "**" + name[name.length - 1];
 }
 
